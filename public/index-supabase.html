@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AquaVision Pro - Système de monitoring intelligent pour l'aquaculture avec Supabase">
+    <title>AquaVision Pro - Gestion de Cages</title>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Main App Container -->
+    <div id="app">
+        <!-- Loading Screen -->
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-logo" style="margin-bottom: 2rem;">
+                    <i data-lucide="waves"></i>
+                    <h1>AquaVision Pro</h1>
+                </div>
+                <p style="text-align: center; color: var(--color-text-secondary);">
+                    Chargement...
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/supabase-client.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/technician-dashboard.js"></script>
+    <script src="assets/js/admin-dashboard.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Check if Supabase is configured
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!SupabaseService.isConfigured()) {
+                const app = document.getElementById('app');
+                app.innerHTML = `
+                    <div class="auth-container">
+                        <div class="auth-card">
+                            <div class="auth-header">
+                                <div class="auth-logo">
+                                    <i data-lucide="alert-triangle"></i>
+                                    <h1>Configuration Requise</h1>
+                                </div>
+                            </div>
+                            <div class="auth-error" style="display: block;">
+                                <h3 style="margin-bottom: 1rem;">Supabase n'est pas configuré</h3>
+                                <p style="margin-bottom: 1rem;">
+                                    Pour utiliser AquaVision Pro, vous devez configurer Supabase.
+                                </p>
+                                <ol style="text-align: left; padding-left: 1.5rem; margin-bottom: 1rem;">
+                                    <li>Créez un projet sur <a href="https://supabase.com" target="_blank" style="color: var(--color-primary);">supabase.com</a></li>
+                                    <li>Exécutez le schéma SQL depuis <code>database/supabase_schema.sql</code></li>
+                                    <li>Récupérez vos clés API</li>
+                                    <li>Configurez <code>assets/js/supabase-client.js</code></li>
+                                </ol>
+                                <p>
+                                    <strong>Guide complet :</strong> Consultez <code>SUPABASE_SETUP.md</code>
+                                </p>
+                            </div>
+                            <div style="text-align: center; margin-top: 1.5rem;">
+                                <a href="index.html" class="btn btn-secondary">
+                                    <i data-lucide="arrow-left"></i>
+                                    Retour à la version locale
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>
