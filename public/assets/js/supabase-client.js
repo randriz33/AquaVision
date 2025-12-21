@@ -138,7 +138,7 @@ class SupabaseService {
     }
 
     static onAuthStateChange(callback) {
-        return supabaseClient.auth.onAuthStateChanged(callback);
+        return supabaseClient.auth.onAuthStateChange(callback);
     }
 
     // ==========================================
