@@ -184,8 +184,7 @@ class SupabaseService {
                 .from('cages')
                 .insert({
                     ...cageData,
-                    created_by: user.id,
-                    updated_by: user.id
+                    created_by: user.id
                 })
                 .select()
                 .single();
@@ -202,13 +201,9 @@ class SupabaseService {
 
     static async updateCage(cageId, updates) {
         try {
-            const user = await this.getCurrentUser();
             const { data, error } = await supabaseClient
                 .from('cages')
-                .update({
-                    ...updates,
-                    updated_by: user.id
-                })
+                .update(updates)
                 .eq('id', cageId)
                 .select()
                 .single();
