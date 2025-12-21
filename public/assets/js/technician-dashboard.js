@@ -59,6 +59,10 @@ class TechnicianDashboard {
                             <i data-lucide="list-checks"></i>
                             Cages à Vérifier
                         </h2>
+                        <button class="btn btn-primary" id="addCageBtn">
+                            <i data-lucide="plus"></i>
+                            Ajouter une Cage
+                        </button>
                     </div>
 
                     <div class="cages-report-grid" id="cagesReportGrid">
@@ -79,6 +83,102 @@ class TechnicianDashboard {
                     </div>
                     <form class="modal-body" id="dailyReportForm">
                         <div id="reportFormContent"></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Add Cage Modal -->
+            <div class="modal" id="addCageModal">
+                <div class="modal-overlay" id="addCageModalOverlay"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Ajouter une Nouvelle Cage</h3>
+                        <button class="modal-close" id="addCageModalClose">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    <form class="modal-body" id="addCageForm">
+                        <div class="form-group">
+                            <label for="newCageNumber" class="form-label">
+                                <i data-lucide="hash"></i>
+                                Numéro de Cage *
+                            </label>
+                            <input
+                                type="text"
+                                id="newCageNumber"
+                                class="form-input"
+                                required
+                                placeholder="Ex: Cage 9"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newCageLocation" class="form-label">
+                                <i data-lucide="map-pin"></i>
+                                Emplacement
+                            </label>
+                            <input
+                                type="text"
+                                id="newCageLocation"
+                                class="form-input"
+                                placeholder="Ex: Zone A, Bassin 1"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newCageSpecies" class="form-label">
+                                <i data-lucide="fish"></i>
+                                Espèce *
+                            </label>
+                            <input
+                                type="text"
+                                id="newCageSpecies"
+                                class="form-input"
+                                required
+                                placeholder="Ex: Tilapia, Bar, Daurade"
+                            >
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="newCageCapacity" class="form-label">
+                                    <i data-lucide="maximize"></i>
+                                    Capacité (poissons)
+                                </label>
+                                <input
+                                    type="number"
+                                    id="newCageCapacity"
+                                    class="form-input"
+                                    min="0"
+                                    placeholder="Ex: 5000"
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="newCageInitialCount" class="form-label">
+                                    <i data-lucide="users"></i>
+                                    Population Initiale *
+                                </label>
+                                <input
+                                    type="number"
+                                    id="newCageInitialCount"
+                                    class="form-input"
+                                    required
+                                    min="0"
+                                    placeholder="Ex: 1250"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" id="cancelAddCageBtn">
+                                Annuler
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i data-lucide="save"></i>
+                                Créer la Cage
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -900,17 +1000,80 @@ class TechnicianDashboard {
     }
 
     static setupListeners() {
+        // Report modal listeners
         const modalClose = document.getElementById('reportModalClose');
         const modalOverlay = document.getElementById('reportModalOverlay');
 
         modalClose?.addEventListener('click', () => this.closeReportForm());
         modalOverlay?.addEventListener('click', () => this.closeReportForm());
 
+        // Add cage button
+        const addCageBtn = document.getElementById('addCageBtn');
+        addCageBtn?.addEventListener('click', () => this.openAddCageModal());
+
+        // Add cage modal listeners
+        const addCageModalClose = document.getElementById('addCageModalClose');
+        const addCageModalOverlay = document.getElementById('addCageModalOverlay');
+        const cancelAddCageBtn = document.getElementById('cancelAddCageBtn');
+
+        addCageModalClose?.addEventListener('click', () => this.closeAddCageModal());
+        addCageModalOverlay?.addEventListener('click', () => this.closeAddCageModal());
+        cancelAddCageBtn?.addEventListener('click', () => this.closeAddCageModal());
+
+        // Add cage form submission
+        const addCageForm = document.getElementById('addCageForm');
+        addCageForm?.addEventListener('submit', (e) => this.handleAddCage(e));
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeReportForm();
+                this.closeAddCageModal();
             }
         });
+    }
+
+    static openAddCageModal() {
+        const modal = document.getElementById('addCageModal');
+        modal?.classList.add('active');
+        document.getElementById('newCageNumber')?.focus();
+    }
+
+    static closeAddCageModal() {
+        const modal = document.getElementById('addCageModal');
+        modal?.classList.remove('active');
+        document.getElementById('addCageForm')?.reset();
+    }
+
+    static async handleAddCage(e) {
+        e.preventDefault();
+
+        const cageNumber = document.getElementById('newCageNumber').value.trim();
+        const location = document.getElementById('newCageLocation').value.trim();
+        const species = document.getElementById('newCageSpecies').value.trim();
+        const capacity = parseInt(document.getElementById('newCageCapacity').value) || null;
+        const initialCount = parseInt(document.getElementById('newCageInitialCount').value);
+
+        const cageData = {
+            cage_number: cageNumber,
+            location: location || null,
+            species: species,
+            capacity: capacity,
+            initial_count: initialCount,
+            alive_count: initialCount,
+            total_dead: 0,
+            status: 'active'
+        };
+
+        const result = await SupabaseService.createCage(cageData);
+
+        if (result.success) {
+            alert('✓ Cage créée avec succès!');
+            this.closeAddCageModal();
+            await this.loadCages();
+            this.render();
+        } else {
+            alert('Erreur lors de la création de la cage: ' + result.error);
+        }
     }
 }
 
