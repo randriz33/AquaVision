@@ -192,6 +192,181 @@ class TechnicianDashboard {
                 </div>
             </div>
 
+            <!-- Biometric Data Section (NEW) -->
+            <div class="form-section-title">
+                <i data-lucide="ruler"></i>
+                Données Biométriques
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i data-lucide="hash"></i>
+                    Taille de l'Échantillon
+                </label>
+                <input
+                    type="number"
+                    id="report_sample_size"
+                    class="form-input"
+                    value="${existingReport?.sample_size || ''}"
+                    placeholder="Nombre de poissons mesurés"
+                    min="0"
+                >
+                <small class="form-hint">Nombre de poissons mesurés pour les données suivantes</small>
+            </div>
+
+            <div class="form-section-subtitle">
+                <i data-lucide="weight"></i>
+                Poids des Poissons
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="minus-circle"></i>
+                        Poids Minimum (g)
+                    </label>
+                    <input
+                        type="number"
+                        id="report_min_weight"
+                        class="form-input"
+                        step="0.01"
+                        value="${existingReport?.min_weight_g || ''}"
+                        placeholder="Ex: 150.5"
+                        min="0"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="target"></i>
+                        Poids Moyen (g)
+                    </label>
+                    <input
+                        type="number"
+                        id="report_avg_weight"
+                        class="form-input"
+                        step="0.01"
+                        value="${existingReport?.average_weight_g || ''}"
+                        placeholder="Ex: 250.75"
+                        min="0"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="plus-circle"></i>
+                        Poids Maximum (g)
+                    </label>
+                    <input
+                        type="number"
+                        id="report_max_weight"
+                        class="form-input"
+                        step="0.01"
+                        value="${existingReport?.max_weight_g || ''}"
+                        placeholder="Ex: 350.25"
+                        min="0"
+                    >
+                </div>
+            </div>
+
+            <div class="form-section-subtitle">
+                <i data-lucide="move-vertical"></i>
+                Taille des Poissons
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="minus-circle"></i>
+                        Longueur Minimum (cm)
+                    </label>
+                    <input
+                        type="number"
+                        id="report_min_length"
+                        class="form-input"
+                        step="0.01"
+                        value="${existingReport?.min_length_cm || ''}"
+                        placeholder="Ex: 15.5"
+                        min="0"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="target"></i>
+                        Longueur Moyenne (cm)
+                    </label>
+                    <input
+                        type="number"
+                        id="report_avg_length"
+                        class="form-input"
+                        step="0.01"
+                        value="${existingReport?.average_length_cm || ''}"
+                        placeholder="Ex: 22.5"
+                        min="0"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="plus-circle"></i>
+                        Longueur Maximum (cm)
+                    </label>
+                    <input
+                        type="number"
+                        id="report_max_length"
+                        class="form-input"
+                        step="0.01"
+                        value="${existingReport?.max_length_cm || ''}"
+                        placeholder="Ex: 28.0"
+                        min="0"
+                    >
+                </div>
+            </div>
+
+            <div class="form-section-subtitle">
+                <i data-lucide="heart-pulse"></i>
+                État de Santé
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="star"></i>
+                        Score de Santé
+                    </label>
+                    <select id="report_health_score" class="form-input">
+                        <option value="">Non évalué</option>
+                        <option value="1" ${existingReport?.health_score === 1 ? 'selected' : ''}>1 - Très Mauvais</option>
+                        <option value="2" ${existingReport?.health_score === 2 ? 'selected' : ''}>2 - Mauvais</option>
+                        <option value="3" ${existingReport?.health_score === 3 ? 'selected' : ''}>3 - Moyen</option>
+                        <option value="4" ${existingReport?.health_score === 4 ? 'selected' : ''}>4 - Bon</option>
+                        <option value="5" ${existingReport?.health_score === 5 ? 'selected' : ''}>5 - Excellent</option>
+                    </select>
+                    <small class="form-hint">Évaluation générale de la santé des poissons</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-checkbox">
+                        <input type="checkbox" id="report_parasites" ${existingReport?.parasites_detected ? 'checked' : ''}>
+                        <span>Parasites Détectés</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i data-lucide="alert-circle"></i>
+                    Signes de Maladie Observés
+                </label>
+                <textarea
+                    id="report_disease_signs"
+                    class="form-input"
+                    rows="2"
+                    placeholder="Décrire tout signe de maladie observé..."
+                >${existingReport?.disease_signs || ''}</textarea>
+            </div>
+
             <!-- Environmental Section -->
             <div class="form-section-title">
                 <i data-lucide="droplet"></i>
@@ -268,6 +443,96 @@ class TechnicianDashboard {
                 </div>
             </div>
 
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="droplet"></i>
+                        Salinité (PSU)
+                    </label>
+                    <input
+                        type="number"
+                        id="report_salinity"
+                        class="form-input"
+                        step="0.1"
+                        value="${existingReport?.salinity || ''}"
+                        placeholder="Ex: 0.5"
+                        min="0"
+                    >
+                    <small class="form-hint">Pour eau salée/saumâtre</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="eye"></i>
+                        Turbidité
+                    </label>
+                    <select id="report_turbidity" class="form-input">
+                        <option value="">Non évalué</option>
+                        <option value="claire" ${existingReport?.turbidity === 'claire' ? 'selected' : ''}>Claire</option>
+                        <option value="légère" ${existingReport?.turbidity === 'légère' ? 'selected' : ''}>Légère</option>
+                        <option value="trouble" ${existingReport?.turbidity === 'trouble' ? 'selected' : ''}>Trouble</option>
+                        <option value="très trouble" ${existingReport?.turbidity === 'très trouble' ? 'selected' : ''}>Très Trouble</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-section-subtitle">
+                <i data-lucide="flask-conical"></i>
+                Qualité Chimique de l'Eau
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="alert-triangle"></i>
+                        Ammoniaque (mg/L)
+                    </label>
+                    <input
+                        type="number"
+                        id="report_ammonia"
+                        class="form-input"
+                        step="0.01"
+                        value="${existingReport?.ammonia || ''}"
+                        placeholder="Ex: 0.25"
+                        min="0"
+                    >
+                    <small class="form-hint">Toxique si >0.5 mg/L</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="alert-triangle"></i>
+                        Nitrite (mg/L)
+                    </label>
+                    <input
+                        type="number"
+                        id="report_nitrite"
+                        class="form-input"
+                        step="0.01"
+                        value="${existingReport?.nitrite || ''}"
+                        placeholder="Ex: 0.15"
+                        min="0"
+                    >
+                    <small class="form-hint">Toxique si élevé</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="droplet"></i>
+                        Nitrate (mg/L)
+                    </label>
+                    <input
+                        type="number"
+                        id="report_nitrate"
+                        class="form-input"
+                        step="0.01"
+                        value="${existingReport?.nitrate || ''}"
+                        placeholder="Ex: 10.5"
+                        min="0"
+                    >
+                </div>
+            </div>
+
             <!-- Feeding Section -->
             <div class="form-section-title">
                 <i data-lucide="package"></i>
@@ -302,6 +567,66 @@ class TechnicianDashboard {
                         class="form-input"
                         value="${existingReport?.feeding_time || ''}"
                     >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="hash"></i>
+                        Distributions/Jour
+                    </label>
+                    <input
+                        type="number"
+                        id="report_feeding_times"
+                        class="form-input"
+                        value="${existingReport?.feeding_times_per_day || ''}"
+                        placeholder="Ex: 3"
+                        min="1"
+                    >
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="box"></i>
+                        Type d'Aliment
+                    </label>
+                    <input
+                        type="text"
+                        id="report_feed_type"
+                        class="form-input"
+                        value="${existingReport?.feed_type || ''}"
+                        placeholder="Ex: Granulés 3mm"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="thumbs-up"></i>
+                        Acceptation
+                    </label>
+                    <select id="report_feed_acceptance" class="form-input">
+                        <option value="">Non évalué</option>
+                        <option value="excellent" ${existingReport?.feed_acceptance === 'excellent' ? 'selected' : ''}>Excellent</option>
+                        <option value="bon" ${existingReport?.feed_acceptance === 'bon' ? 'selected' : ''}>Bon</option>
+                        <option value="moyen" ${existingReport?.feed_acceptance === 'moyen' ? 'selected' : ''}>Moyen</option>
+                        <option value="faible" ${existingReport?.feed_acceptance === 'faible' ? 'selected' : ''}>Faible</option>
+                        <option value="refus" ${existingReport?.feed_acceptance === 'refus' ? 'selected' : ''}>Refus</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="trash-2"></i>
+                        Restes
+                    </label>
+                    <select id="report_leftover_feed" class="form-input">
+                        <option value="">Non évalué</option>
+                        <option value="aucun" ${existingReport?.leftover_feed === 'aucun' ? 'selected' : ''}>Aucun</option>
+                        <option value="peu" ${existingReport?.leftover_feed === 'peu' ? 'selected' : ''}>Peu</option>
+                        <option value="moyen" ${existingReport?.leftover_feed === 'moyen' ? 'selected' : ''}>Moyen</option>
+                        <option value="beaucoup" ${existingReport?.leftover_feed === 'beaucoup' ? 'selected' : ''}>Beaucoup</option>
+                    </select>
                 </div>
             </div>
 
@@ -458,20 +783,53 @@ class TechnicianDashboard {
         const reportData = {
             cage_id: document.getElementById('report_cage_id').value,
             report_date: document.getElementById('report_date').value,
+
+            // Population data
             alive_count: parseInt(document.getElementById('report_alive_count').value),
             new_dead: parseInt(document.getElementById('report_new_dead').value) || 0,
+
+            // Biometric data
+            sample_size: parseInt(document.getElementById('report_sample_size').value) || null,
+            average_weight_g: parseFloat(document.getElementById('report_avg_weight').value) || null,
+            min_weight_g: parseFloat(document.getElementById('report_min_weight').value) || null,
+            max_weight_g: parseFloat(document.getElementById('report_max_weight').value) || null,
+            average_length_cm: parseFloat(document.getElementById('report_avg_length').value) || null,
+            min_length_cm: parseFloat(document.getElementById('report_min_length').value) || null,
+            max_length_cm: parseFloat(document.getElementById('report_max_length').value) || null,
+            health_score: parseInt(document.getElementById('report_health_score').value) || null,
+            disease_signs: document.getElementById('report_disease_signs').value || null,
+            parasites_detected: document.getElementById('report_parasites').checked,
+
+            // Environmental data
             water_temp: parseFloat(document.getElementById('report_water_temp').value) || null,
             ambient_temp: parseFloat(document.getElementById('report_ambient_temp').value) || null,
             ph: parseFloat(document.getElementById('report_ph').value) || null,
             oxygen: parseFloat(document.getElementById('report_oxygen').value) || null,
+            salinity: parseFloat(document.getElementById('report_salinity').value) || null,
+            turbidity: document.getElementById('report_turbidity').value || null,
+            ammonia: parseFloat(document.getElementById('report_ammonia').value) || null,
+            nitrite: parseFloat(document.getElementById('report_nitrite').value) || null,
+            nitrate: parseFloat(document.getElementById('report_nitrate').value) || null,
+
+            // Feeding data
             feeding_kg: parseFloat(document.getElementById('report_feeding_kg').value) || null,
             feeding_time: document.getElementById('report_feeding_time').value || null,
+            feeding_times_per_day: parseInt(document.getElementById('report_feeding_times').value) || null,
+            feed_type: document.getElementById('report_feed_type').value || null,
+            feed_acceptance: document.getElementById('report_feed_acceptance').value || null,
+            leftover_feed: document.getElementById('report_leftover_feed').value || null,
+
+            // Observations
             weather_conditions: document.getElementById('report_weather').value || null,
             water_quality: document.getElementById('report_water_quality').value || null,
             fish_behavior: document.getElementById('report_fish_behavior').value || null,
+
+            // Incidents
             has_incident: document.getElementById('report_has_incident').checked,
             incident_type: document.getElementById('report_incident_type')?.value || null,
             incident_description: document.getElementById('report_incident_description')?.value || null,
+
+            // Remarks
             remarks: document.getElementById('report_remarks').value || null
         };
 

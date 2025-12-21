@@ -712,6 +712,22 @@ body {
     height: 20px;
 }
 
+.form-section-subtitle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin: var(--spacing-lg) 0 var(--spacing-md) 0;
+    padding-left: var(--spacing-sm);
+}
+
+.form-section-subtitle svg {
+    width: 18px;
+    height: 18px;
+}
+
 .form-label {
     display: flex;
     align-items: center;
