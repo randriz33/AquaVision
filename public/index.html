@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AquaVision Pro - Système de monitoring intelligent pour l'aquaculture">
+    <title>AquaVision Pro - Gestion de Cages</title>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i data-lucide="waves"></i>
+                    <span>AquaVision Pro</span>
+                </div>
+                <nav class="nav">
+                    <button class="btn btn-icon" id="themeToggle" title="Changer de thème">
+                        <i data-lucide="moon"></i>
+                    </button>
+                    <button class="btn btn-icon" id="refreshBtn" title="Actualiser">
+                        <i data-lucide="refresh-cw"></i>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Dashboard Stats -->
+            <section class="dashboard">
+                <h1 class="dashboard-title">Tableau de Bord</h1>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon primary">
+                            <i data-lucide="layers"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Cages Actives</p>
+                            <p class="stat-value" id="totalCages">0</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <i data-lucide="fish"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Poissons Vivants</p>
+                            <p class="stat-value" id="totalAlive">0</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon warning">
+                            <i data-lucide="trending-up"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Taux de Survie</p>
+                            <p class="stat-value" id="survivalRate">0%</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon danger">
+                            <i data-lucide="alert-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Alertes Actives</p>
+                            <p class="stat-value" id="totalAlerts">0</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alerts Panel -->
+            <section class="alerts-section" id="alertsSection" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i data-lucide="alert-circle"></i>
+                        Alertes Actives
+                    </h2>
+                </div>
+                <div class="alerts-container" id="alertsContainer"></div>
+            </section>
+
+            <!-- Cages Section -->
+            <section class="cages-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i data-lucide="grid-3x3"></i>
+                        Gestion des Cages
+                    </h2>
+                    <button class="btn btn-primary" id="addCageBtn">
+                        <i data-lucide="plus"></i>
+                        Ajouter une Cage
+                    </button>
+                </div>
+
+                <div class="cages-grid" id="cagesGrid">
+                    <!-- Cages will be dynamically added here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal for Adding/Editing Cage -->
+    <div class="modal" id="cageModal">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Ajouter une Cage</h3>
+                <button class="modal-close" id="modalClose">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form class="modal-body" id="cageForm">
+                <div class="form-group">
+                    <label for="cageNumber" class="form-label">
+                        <i data-lucide="hash"></i>
+                        Numéro de Cage
+                    </label>
+                    <input
+                        type="number"
+                        id="cageNumber"
+                        class="form-input"
+                        placeholder="Ex: 1"
+                        required
+                        min="1"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="initialCount" class="form-label">
+                        <i data-lucide="fish"></i>
+                        Population Initiale
+                    </label>
+                    <input
+                        type="number"
+                        id="initialCount"
+                        class="form-input"
+                        placeholder="Ex: 200"
+                        required
+                        min="0"
+                    >
+                </div>
+
+                <div class="form-group" id="aliveCountGroup" style="display: none;">
+                    <label for="aliveCount" class="form-label">
+                        <i data-lucide="heart"></i>
+                        Poissons Vivants
+                    </label>
+                    <input
+                        type="number"
+                        id="aliveCount"
+                        class="form-input"
+                        placeholder="Ex: 185"
+                        min="0"
+                    >
+                </div>
+
+                <div class="form-group" id="newDeadGroup" style="display: none;">
+                    <label for="newDead" class="form-label">
+                        <i data-lucide="x-circle"></i>
+                        Nouvelles Pertes
+                    </label>
+                    <input
+                        type="number"
+                        id="newDead"
+                        class="form-input"
+                        placeholder="Ex: 5"
+                        min="0"
+                        value="0"
+                    >
+                </div>
+
+                <!-- Environmental Data Section -->
+                <div id="environmentalSection" style="display: none;">
+                    <div class="form-section-title">
+                        <i data-lucide="droplet"></i>
+                        Données Environnementales
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="waterTemp" class="form-label">
+                                <i data-lucide="thermometer"></i>
+                                Temp. Eau (°C)
+                            </label>
+                            <input
+                                type="number"
+                                id="waterTemp"
+                                class="form-input"
+                                placeholder="Ex: 24.5"
+                                step="0.1"
+                                min="0"
+                                max="50"
+                            >
+                            <small class="form-hint">Optimal: 20-28°C</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ambientTemp" class="form-label">
+                                <i data-lucide="sun"></i>
+                                Temp. Air (°C)
+                            </label>
+                            <input
+                                type="number"
+                                id="ambientTemp"
+                                class="form-input"
+                                placeholder="Ex: 22.0"
+                                step="0.1"
+                                min="-10"
+                                max="50"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ph" class="form-label">
+                                <i data-lucide="beaker"></i>
+                                pH
+                            </label>
+                            <input
+                                type="number"
+                                id="ph"
+                                class="form-input"
+                                placeholder="Ex: 7.2"
+                                step="0.1"
+                                min="0"
+                                max="14"
+                            >
+                            <small class="form-hint">Optimal: 6.5-8.5</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="oxygen" class="form-label">
+                                <i data-lucide="wind"></i>
+                                O₂ (mg/L)
+                            </label>
+                            <input
+                                type="number"
+                                id="oxygen"
+                                class="form-input"
+                                placeholder="Ex: 6.5"
+                                step="0.1"
+                                min="0"
+                                max="20"
+                            >
+                            <small class="form-hint">Optimal: >5 mg/L</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="feedingKg" class="form-label">
+                            <i data-lucide="package"></i>
+                            Alimentation (kg/jour)
+                        </label>
+                        <input
+                            type="number"
+                            id="feedingKg"
+                            class="form-input"
+                            placeholder="Ex: 15.5"
+                            step="0.1"
+                            min="0"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes" class="form-label">
+                            <i data-lucide="file-text"></i>
+                            Notes / Observations
+                        </label>
+                        <textarea
+                            id="notes"
+                            class="form-input"
+                            placeholder="Observations, incidents, remarques..."
+                            rows="3"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i data-lucide="save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>AquaVision Pro v1.0.0 - Gestion intelligente de cages à poissons</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/aquavision-api-mock.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/quick-entry.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

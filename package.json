@@ -1,0 +1,33 @@
+{
+  "name": "aquavision-pro",
+  "version": "1.0.0",
+  "description": "Système de monitoring intelligent pour l'aquaculture",
+  "main": "public/index.html",
+  "scripts": {
+    "start": "python -m http.server 8000 --directory public",
+    "start:php": "php -S localhost:8000 -t public",
+    "start:node": "npx http-server public -p 8000 -o",
+    "dev": "npm run start:node"
+  },
+  "keywords": [
+    "aquaculture",
+    "monitoring",
+    "fish-farm",
+    "cage-management",
+    "dashboard"
+  ],
+  "author": "Randria33",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Randria33/aquavision-pro.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Randria33/aquavision-pro/issues"
+  },
+  "homepage": "https://github.com/Randria33/aquavision-pro#readme",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {}
+}
