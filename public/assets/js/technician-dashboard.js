@@ -933,10 +933,6 @@ class TechnicianDashboard {
             remarks: document.getElementById('report_remarks').value || null
         };
 
-        // Calculate total_dead
-        const cage = this.selectedCage;
-        reportData.total_dead = cage.total_dead + reportData.new_dead;
-
         const saveBtn = document.getElementById('saveReportBtn');
         saveBtn.disabled = true;
         saveBtn.innerHTML = '<i data-lucide="loader"></i> Enregistrement...';

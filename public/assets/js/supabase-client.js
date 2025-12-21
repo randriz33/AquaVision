@@ -308,10 +308,17 @@ class SupabaseService {
             if (error) throw error;
 
             // Update cage counts
-            await this.updateCage(reportData.cage_id, {
-                alive_count: reportData.alive_count,
-                total_dead: reportData.total_dead
-            });
+            // Get current cage to calculate new total_dead
+            const cageResult = await this.getCage(reportData.cage_id);
+            if (cageResult.success) {
+                const currentTotalDead = cageResult.cage.total_dead || 0;
+                const newDead = reportData.new_dead || 0;
+
+                await this.updateCage(reportData.cage_id, {
+                    alive_count: reportData.alive_count,
+                    total_dead: currentTotalDead + newDead
+                });
+            }
 
             await this.logActivity('report_created', 'daily_report', data.id, {
                 cage_id: reportData.cage_id,
