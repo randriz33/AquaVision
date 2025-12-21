@@ -289,7 +289,7 @@ $$ LANGUAGE plpgsql;
 -- Fonction: Calculer le taux de croissance quotidien
 CREATE OR REPLACE FUNCTION calculate_daily_growth_rate(
     cage_id_param UUID,
-    current_date DATE
+    report_date_param DATE
 )
 RETURNS DECIMAL AS $$
 DECLARE
@@ -300,12 +300,12 @@ BEGIN
     -- Poids actuel
     SELECT average_weight_g INTO current_weight
     FROM daily_reports
-    WHERE cage_id = cage_id_param AND report_date = current_date;
+    WHERE cage_id = cage_id_param AND report_date = report_date_param;
 
     -- Poids précédent
     SELECT average_weight_g INTO previous_weight
     FROM daily_reports
-    WHERE cage_id = cage_id_param AND report_date < current_date
+    WHERE cage_id = cage_id_param AND report_date < report_date_param
     ORDER BY report_date DESC
     LIMIT 1;
 
