@@ -435,9 +435,9 @@ VALUES
 -- ==========================================
 -- Commentaires
 -- ==========================================
-COMMENT ON TABLE public.daily_reports IS 'Rapports journaliers optimisés avec métriques biométriques et de croissance';
-COMMENT ON COLUMN public.daily_reports.average_weight_g IS 'Poids moyen des poissons en grammes (échantillon)';
+COMMENT ON TABLE public.daily_reports IS 'Rapports journaliers optimises avec metriques biometriques et de croissance';
+COMMENT ON COLUMN public.daily_reports.average_weight_g IS 'Poids moyen des poissons en grammes (echantillon)';
 COMMENT ON COLUMN public.daily_reports.average_length_cm IS 'Longueur moyenne des poissons en cm';
-COMMENT ON COLUMN public.daily_reports.fcr IS 'Food Conversion Ratio - Indicateur d\'efficacité alimentaire';
+COMMENT ON COLUMN public.daily_reports.fcr IS 'Food Conversion Ratio - Indicateur efficacite alimentaire';
 COMMENT ON COLUMN public.daily_reports.daily_growth_rate IS 'Taux de croissance quotidien en pourcentage';
-COMMENT ON TABLE public.biometric_samples IS 'Données biométriques détaillées par poisson échantillonné';
+COMMENT ON TABLE public.biometric_samples IS 'Donnees biometriques detaillees par poisson echantillonne';

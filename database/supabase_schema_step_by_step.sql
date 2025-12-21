@@ -390,10 +390,21 @@ WHERE dr.oxygen < 5
 ORDER BY dr.report_date DESC;
 
 -- ==========================================
--- TERMINÉ !
+-- ETAPE 10 : Commentaires (Optionnel)
 -- ==========================================
 
--- Vérification: Afficher toutes les tables créées
+COMMENT ON TABLE public.daily_reports IS 'Rapports journaliers optimises avec metriques biometriques et de croissance';
+COMMENT ON COLUMN public.daily_reports.average_weight_g IS 'Poids moyen des poissons en grammes (echantillon)';
+COMMENT ON COLUMN public.daily_reports.average_length_cm IS 'Longueur moyenne des poissons en cm';
+COMMENT ON COLUMN public.daily_reports.fcr IS 'Food Conversion Ratio - Indicateur efficacite alimentaire';
+COMMENT ON COLUMN public.daily_reports.daily_growth_rate IS 'Taux de croissance quotidien en pourcentage';
+COMMENT ON TABLE public.biometric_samples IS 'Donnees biometriques detaillees par poisson echantillonne';
+
+-- ==========================================
+-- TERMINE !
+-- ==========================================
+
+-- Verification: Afficher toutes les tables creees
 SELECT table_name
 FROM information_schema.tables
 WHERE table_schema = 'public'
