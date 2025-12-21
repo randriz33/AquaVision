@@ -52,3 +52,6 @@ composer.lock
 # Cache
 .cache/
 *.cache
+
+# Claude settings
+.claude/
