@@ -72,7 +72,7 @@ class AdminDashboard {
         `;
 
         lucide.createIcons();
-        this.renderView();
+        await this.renderView();
     }
 
     static switchView(view) {
@@ -80,28 +80,30 @@ class AdminDashboard {
         this.render();
     }
 
-    static renderView() {
+    static async renderView() {
         const container = document.getElementById('adminViewContent');
         if (!container) return;
 
         switch (this.currentView) {
             case 'overview':
                 container.innerHTML = this.renderOverview();
-                this.loadStats();
+                lucide.createIcons();
+                await this.loadStats();
                 break;
             case 'cages':
                 container.innerHTML = this.renderCagesView();
+                lucide.createIcons();
                 break;
             case 'reports':
                 container.innerHTML = this.renderReportsView();
+                lucide.createIcons();
                 break;
             case 'activity':
                 container.innerHTML = this.renderActivityView();
-                this.loadActivityLog();
+                lucide.createIcons();
+                await this.loadActivityLog();
                 break;
         }
-
-        lucide.createIcons();
     }
 
     static renderOverview() {
