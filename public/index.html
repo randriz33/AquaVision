@@ -4,13 +4,133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="AquaVision Pro - Système de monitoring intelligent pour l'aquaculture">
-    <title>AquaVision Pro - Gestion de Cages</title>
+    <title>AquaVision Pro - Tableau de Bord Public</title>
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <!-- Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn-white {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .info-section {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .info-card {
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .info-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        .info-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-card li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-card li::before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .public-stats {
+            margin: 3rem 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -22,23 +142,51 @@
                     <span>AquaVision Pro</span>
                 </div>
                 <nav class="nav">
-                    <button class="btn btn-icon" id="themeToggle" title="Changer de thème">
-                        <i data-lucide="moon"></i>
-                    </button>
-                    <button class="btn btn-icon" id="refreshBtn" title="Actualiser">
-                        <i data-lucide="refresh-cw"></i>
-                    </button>
+                    <a href="index-supabase.html" class="btn btn-primary">
+                        <i data-lucide="log-in"></i>
+                        Connexion
+                    </a>
                 </nav>
             </div>
         </div>
     </header>
 
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">
+                <i data-lucide="waves" style="display: inline-block; vertical-align: middle;"></i>
+                AquaVision Pro
+            </h1>
+            <p class="hero-subtitle">
+                Système de Monitoring Intelligent pour l'Aquaculture
+            </p>
+            <p style="max-width: 600px; margin: 0 auto 2rem; opacity: 0.9;">
+                Solution professionnelle de gestion aquacole avec suivi biométrique complet,
+                calculs automatiques et analyse en temps réel.
+            </p>
+            <div class="hero-buttons">
+                <a href="index-supabase.html" class="btn btn-large btn-white">
+                    <i data-lucide="log-in"></i>
+                    Accéder à l'Application
+                </a>
+                <a href="#stats" class="btn btn-large btn-outline">
+                    <i data-lucide="bar-chart-2"></i>
+                    Voir les Statistiques
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- Main Content -->
     <main class="main">
         <div class="container">
-            <!-- Dashboard Stats -->
-            <section class="dashboard">
-                <h1 class="dashboard-title">Tableau de Bord</h1>
+            <!-- Public Stats -->
+            <section class="public-stats" id="stats">
+                <h2 class="section-title" style="text-align: center; margin-bottom: 2rem;">
+                    <i data-lucide="activity"></i>
+                    Statistiques en Temps Réel
+                </h2>
 
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -47,7 +195,9 @@
                         </div>
                         <div class="stat-info">
                             <p class="stat-label">Cages Actives</p>
-                            <p class="stat-value" id="totalCages">0</p>
+                            <p class="stat-value" id="totalCages">
+                                <span class="loading">Chargement...</span>
+                            </p>
                         </div>
                     </div>
 
@@ -56,8 +206,10 @@
                             <i data-lucide="fish"></i>
                         </div>
                         <div class="stat-info">
-                            <p class="stat-label">Poissons Vivants</p>
-                            <p class="stat-value" id="totalAlive">0</p>
+                            <p class="stat-label">Population Totale</p>
+                            <p class="stat-value" id="totalPopulation">
+                                <span class="loading">Chargement...</span>
+                            </p>
                         </div>
                     </div>
 
@@ -66,258 +218,170 @@
                             <i data-lucide="trending-up"></i>
                         </div>
                         <div class="stat-info">
-                            <p class="stat-label">Taux de Survie</p>
-                            <p class="stat-value" id="survivalRate">0%</p>
+                            <p class="stat-label">Biomasse Totale</p>
+                            <p class="stat-value" id="totalBiomass">
+                                <span class="loading">Chargement...</span>
+                            </p>
                         </div>
                     </div>
 
                     <div class="stat-card">
-                        <div class="stat-icon danger">
-                            <i data-lucide="alert-triangle"></i>
+                        <div class="stat-icon info">
+                            <i data-lucide="file-text"></i>
                         </div>
                         <div class="stat-info">
-                            <p class="stat-label">Alertes Actives</p>
-                            <p class="stat-value" id="totalAlerts">0</p>
+                            <p class="stat-label">Rapports ce Mois</p>
+                            <p class="stat-value" id="totalReports">
+                                <span class="loading">Chargement...</span>
+                            </p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Alerts Panel -->
-            <section class="alerts-section" id="alertsSection" style="display: none;">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i data-lucide="alert-circle"></i>
-                        Alertes Actives
-                    </h2>
+            <!-- Features Section -->
+            <section class="info-section">
+                <h2 class="section-title" style="text-align: center; margin-bottom: 2rem;">
+                    <i data-lucide="zap"></i>
+                    Fonctionnalités Principales
+                </h2>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>
+                            <i data-lucide="database"></i>
+                            Gestion Complète
+                        </h3>
+                        <ul>
+                            <li>Suivi détaillé de chaque cage</li>
+                            <li>Historique complet des rapports</li>
+                            <li>Données biométriques précises</li>
+                            <li>Paramètres environnementaux</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>
+                            <i data-lucide="calculator"></i>
+                            Calculs Automatiques
+                        </h3>
+                        <ul>
+                            <li>Biomasse totale en temps réel</li>
+                            <li>Taux de croissance quotidien</li>
+                            <li>FCR (Food Conversion Ratio)</li>
+                            <li>Coefficient de condition (K)</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>
+                            <i data-lucide="shield-check"></i>
+                            Sécurité & Accès
+                        </h3>
+                        <ul>
+                            <li>Authentification sécurisée</li>
+                            <li>Rôles Admin/Technicien</li>
+                            <li>Permissions personnalisées</li>
+                            <li>Logs d'activité complets</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>
+                            <i data-lucide="bar-chart"></i>
+                            Analyse & Reporting
+                        </h3>
+                        <ul>
+                            <li>Tableaux de bord intuitifs</li>
+                            <li>Statistiques en temps réel</li>
+                            <li>Échantillonnage biométrique</li>
+                            <li>Export des données (à venir)</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="alerts-container" id="alertsContainer"></div>
             </section>
 
-            <!-- Cages Section -->
-            <section class="cages-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i data-lucide="grid-3x3"></i>
-                        Gestion des Cages
-                    </h2>
-                    <button class="btn btn-primary" id="addCageBtn">
-                        <i data-lucide="plus"></i>
-                        Ajouter une Cage
-                    </button>
-                </div>
-
-                <div class="cages-grid" id="cagesGrid">
-                    <!-- Cages will be dynamically added here -->
-                </div>
+            <!-- CTA Section -->
+            <section class="info-section" style="text-align: center; padding: 3rem 0;">
+                <h2 style="margin-bottom: 1rem;">Prêt à commencer?</h2>
+                <p style="color: #666; margin-bottom: 2rem;">
+                    Connectez-vous pour accéder à votre tableau de bord personnalisé
+                </p>
+                <a href="index-supabase.html" class="btn btn-large btn-primary">
+                    <i data-lucide="arrow-right"></i>
+                    Accéder à l'Application
+                </a>
             </section>
         </div>
     </main>
 
-    <!-- Modal for Adding/Editing Cage -->
-    <div class="modal" id="cageModal">
-        <div class="modal-overlay" id="modalOverlay"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Ajouter une Cage</h3>
-                <button class="modal-close" id="modalClose">
-                    <i data-lucide="x"></i>
-                </button>
-            </div>
-            <form class="modal-body" id="cageForm">
-                <div class="form-group">
-                    <label for="cageNumber" class="form-label">
-                        <i data-lucide="hash"></i>
-                        Numéro de Cage
-                    </label>
-                    <input
-                        type="number"
-                        id="cageNumber"
-                        class="form-input"
-                        placeholder="Ex: 1"
-                        required
-                        min="1"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="initialCount" class="form-label">
-                        <i data-lucide="fish"></i>
-                        Population Initiale
-                    </label>
-                    <input
-                        type="number"
-                        id="initialCount"
-                        class="form-input"
-                        placeholder="Ex: 200"
-                        required
-                        min="0"
-                    >
-                </div>
-
-                <div class="form-group" id="aliveCountGroup" style="display: none;">
-                    <label for="aliveCount" class="form-label">
-                        <i data-lucide="heart"></i>
-                        Poissons Vivants
-                    </label>
-                    <input
-                        type="number"
-                        id="aliveCount"
-                        class="form-input"
-                        placeholder="Ex: 185"
-                        min="0"
-                    >
-                </div>
-
-                <div class="form-group" id="newDeadGroup" style="display: none;">
-                    <label for="newDead" class="form-label">
-                        <i data-lucide="x-circle"></i>
-                        Nouvelles Pertes
-                    </label>
-                    <input
-                        type="number"
-                        id="newDead"
-                        class="form-input"
-                        placeholder="Ex: 5"
-                        min="0"
-                        value="0"
-                    >
-                </div>
-
-                <!-- Environmental Data Section -->
-                <div id="environmentalSection" style="display: none;">
-                    <div class="form-section-title">
-                        <i data-lucide="droplet"></i>
-                        Données Environnementales
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="waterTemp" class="form-label">
-                                <i data-lucide="thermometer"></i>
-                                Temp. Eau (°C)
-                            </label>
-                            <input
-                                type="number"
-                                id="waterTemp"
-                                class="form-input"
-                                placeholder="Ex: 24.5"
-                                step="0.1"
-                                min="0"
-                                max="50"
-                            >
-                            <small class="form-hint">Optimal: 20-28°C</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="ambientTemp" class="form-label">
-                                <i data-lucide="sun"></i>
-                                Temp. Air (°C)
-                            </label>
-                            <input
-                                type="number"
-                                id="ambientTemp"
-                                class="form-input"
-                                placeholder="Ex: 22.0"
-                                step="0.1"
-                                min="-10"
-                                max="50"
-                            >
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="ph" class="form-label">
-                                <i data-lucide="beaker"></i>
-                                pH
-                            </label>
-                            <input
-                                type="number"
-                                id="ph"
-                                class="form-input"
-                                placeholder="Ex: 7.2"
-                                step="0.1"
-                                min="0"
-                                max="14"
-                            >
-                            <small class="form-hint">Optimal: 6.5-8.5</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="oxygen" class="form-label">
-                                <i data-lucide="wind"></i>
-                                O₂ (mg/L)
-                            </label>
-                            <input
-                                type="number"
-                                id="oxygen"
-                                class="form-input"
-                                placeholder="Ex: 6.5"
-                                step="0.1"
-                                min="0"
-                                max="20"
-                            >
-                            <small class="form-hint">Optimal: >5 mg/L</small>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="feedingKg" class="form-label">
-                            <i data-lucide="package"></i>
-                            Alimentation (kg/jour)
-                        </label>
-                        <input
-                            type="number"
-                            id="feedingKg"
-                            class="form-input"
-                            placeholder="Ex: 15.5"
-                            step="0.1"
-                            min="0"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="notes" class="form-label">
-                            <i data-lucide="file-text"></i>
-                            Notes / Observations
-                        </label>
-                        <textarea
-                            id="notes"
-                            class="form-input"
-                            placeholder="Observations, incidents, remarques..."
-                            rows="3"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="cancelBtn">
-                        Annuler
-                    </button>
-                    <button type="submit" class="btn btn-primary" id="submitBtn">
-                        <i data-lucide="save"></i>
-                        Enregistrer
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>AquaVision Pro v1.0.0 - Gestion intelligente de cages à poissons</p>
+            <p>AquaVision Pro v2.1.0 - Gestion Professionnelle d'Aquaculture</p>
+            <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 0.5rem;">
+                Powered by Supabase • Deployed on Netlify
+            </p>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="assets/js/aquavision-api-mock.js"></script>
-    <script src="assets/js/app.js"></script>
-    <script src="assets/js/quick-entry.js"></script>
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
+
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://gswozuotdrfgvutitssf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdzd296dW90ZHJmZ3Z1dGl0c3NmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDA5NzMsImV4cCI6MjA4MTkxNjk3M30.9fivWqGwgVjs6lvKHg-ybWtq1D5EaZ3ZM7Gcz_JZxh0';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Fetch public statistics
+        async function loadPublicStats() {
+            try {
+                // Fetch cages count and population
+                const { data: cages, error: cagesError } = await supabase
+                    .from('cages')
+                    .select('alive_count, current_biomass')
+                    .eq('status', 'active');
+
+                if (cagesError) throw cagesError;
+
+                // Calculate totals
+                const totalCages = cages.length;
+                const totalPopulation = cages.reduce((sum, cage) => sum + (cage.alive_count || 0), 0);
+                const totalBiomass = cages.reduce((sum, cage) => sum + (cage.current_biomass || 0), 0);
+
+                // Fetch reports count for this month
+                const startOfMonth = new Date();
+                startOfMonth.setDate(1);
+                startOfMonth.setHours(0, 0, 0, 0);
+
+                const { count: reportsCount, error: reportsError } = await supabase
+                    .from('daily_reports')
+                    .select('*', { count: 'exact', head: true })
+                    .gte('report_date', startOfMonth.toISOString().split('T')[0]);
+
+                if (reportsError) throw reportsError;
+
+                // Update UI
+                document.getElementById('totalCages').textContent = totalCages;
+                document.getElementById('totalPopulation').textContent = totalPopulation.toLocaleString();
+                document.getElementById('totalBiomass').textContent = totalBiomass.toFixed(1) + ' kg';
+                document.getElementById('totalReports').textContent = reportsCount || 0;
+
+            } catch (error) {
+                console.error('Erreur chargement statistiques:', error);
+                // Show fallback values
+                document.getElementById('totalCages').textContent = '-';
+                document.getElementById('totalPopulation').textContent = '-';
+                document.getElementById('totalBiomass').textContent = '-';
+                document.getElementById('totalReports').textContent = '-';
+            }
+        }
+
+        // Load stats on page load
+        document.addEventListener('DOMContentLoaded', loadPublicStats);
     </script>
 </body>
 </html>
