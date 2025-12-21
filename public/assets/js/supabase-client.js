@@ -9,7 +9,7 @@
 
 const SUPABASE_CONFIG = {
     url: 'https://gswozuotdrfgvutitssf.supabase.co',
-    anonKey: 'sb_publishable_lBZ4WQtTR-Cqk9JKt1V_EQ_2sBzLU0e'
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdzd296dW90ZHJmZ3Z1dGl0c3NmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDA5NzMsImV4cCI6MjA4MTkxNjk3M30.9fivWqGwgVjs6lvKHg-ybWtq1D5EaZ3ZM7Gcz_JZxh0'
 };
 
 // Vérifier que la configuration est définie
