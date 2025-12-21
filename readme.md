@@ -1,364 +1,365 @@
 # AquaVision Pro
 
 <div align="center">
-  <img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-2.1.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/status-active-success.svg" alt="Status">
-  <img src="https://img.shields.io/badge/PHP-7.4+-purple.svg" alt="PHP">
+  <img src="https://img.shields.io/badge/Supabase-PostgreSQL-green.svg" alt="Supabase">
   <img src="https://img.shields.io/badge/JavaScript-ES6+-yellow.svg" alt="JavaScript">
 </div>
 
 <div align="center">
   <h3>Système de Monitoring Intelligent pour l'Aquaculture</h3>
-  <p>Une application web moderne pour gérer et surveiller vos cages à poissons en temps réel</p>
+  <p>Application web moderne avec suivi biométrique complet et base de données cloud</p>
 </div>
 
 ---
 
 ## Aperçu
 
-AquaVision Pro est une solution complète de gestion aquacole qui permet aux pisciculteurs de :
-- Surveiller en temps réel l'état de leurs cages
-- Recevoir des alertes automatiques
-- Analyser les statistiques de mortalité
-- Gérer l'historique des populations
-- Accéder depuis n'importe quel appareil
+AquaVision Pro est une solution complète de gestion aquacole professionnelle qui permet aux techniciens et administrateurs de :
+- Suivre en temps réel l'état de toutes les cages
+- Enregistrer des données biométriques détaillées (poids, longueur, échantillonnage)
+- Calculer automatiquement les indicateurs de performance (FCR, croissance, biomasse)
+- Analyser la condition des poissons (coefficient K, CV)
+- Gérer l'alimentation et les paramètres environnementaux
+- Accéder depuis n'importe où avec authentification sécurisée
 
-## Fonctionnalités
+## Fonctionnalités Principales
 
-### Fonctionnalités Principales
+### Gestion des Cages
+- Suivi détaillé de chaque cage (population, biomasse, statut)
+- Historique complet des rapports journaliers
+- Progression en temps réel (cages complétées/en attente)
+- Vue d'ensemble avec statistiques instantanées
 
-**Gestion des Cages**
-- Ajout dynamique de nouvelles cages
-- Modification en temps réel des populations
-- Suivi du nombre initial de poissons
-- Enregistrement de la mortalité
+### Données Biométriques Complètes
+- **Échantillonnage multi-poissons** : Poids et longueur individuels
+- **Calculs automatiques** :
+  - Poids moyen et longueur moyenne
+  - Coefficient de condition (K)
+  - Coefficient de variation (CV)
+  - Biomasse totale
+  - Taux de croissance quotidien
+  - FCR (Food Conversion Ratio)
 
-**Système d'Alertes Intelligent**
-- Alertes de mortalité élevée (>10%)
-- Notifications de population faible (<100 poissons)
-- Validation des données incohérentes
+### Paramètres Environnementaux
+- Température de l'eau
+- pH
+- Oxygène dissous (mg/L)
+- Suivi de l'alimentation (quantité, type)
 
-**Analytics & Statistiques**
-- Tableau de bord en temps réel
-- Taux de survie global
-- Score de performance
-- Densité moyenne par cage
+### Système d'Authentification
+- Connexion sécurisée avec Supabase Auth
+- Rôles utilisateurs (Admin/Technicien)
+- Permissions basées sur les rôles (RLS)
+- Logs d'activité complets
 
-**Interface Utilisateur**
-- Design futuriste avec animations océaniques
-- Interface responsive (mobile/desktop)
-- Mode sombre par défaut
-- Animations fluides et immersives
-
-### Fonctionnalités Techniques
-
-- Mise à jour automatique de l'affichage
-- Persistance des données (localStorage/API)
-- API REST pour intégration
-- Mode développement avec API Mock
-- Architecture MVC évolutive
+### Dashboard Technicien
+- Interface intuitive et responsive
+- Formulaires optimisés pour saisie rapide
+- Validation en temps réel
+- Progression visuelle des tâches quotidiennes
 
 ## Technologies Utilisées
 
 ### Frontend
-- **HTML5** - Structure sémantique
-- **CSS3** - Animations et design moderne
-- **JavaScript ES6+** - Logique et interactivité
-- **Web Animations API** - Effets visuels
+- **HTML5** - Structure sémantique moderne
+- **CSS3** - Design responsive avec animations
+- **JavaScript ES6+** - Logique métier et interactivité
+- **Supabase JS Client** - Communication avec la base de données
 
-### Backend (En développement)
-- **PHP 7.4+** - Logique serveur
-- **MySQL/MariaDB** - Base de données
-- **Architecture MVC** - Organisation du code
-- **API REST** - Communication client-serveur
+### Backend
+- **Supabase** - Backend-as-a-Service
+- **PostgreSQL** - Base de données relationnelle
+- **Row Level Security (RLS)** - Sécurité au niveau des lignes
+- **Edge Functions** - Fonctions serveur (optionnel)
+
+### Infrastructure
+- **Netlify** - Hébergement et déploiement continu
+- **Git** - Contrôle de version
+- **GitHub** - Repository et collaboration
 
 ## Installation
 
 ### Prérequis
-- Navigateur web moderne (Chrome, Firefox, Safari, Edge)
-- Serveur web (Apache, Nginx) - *optionnel pour la v1.0*
-- PHP 7.4+ - *pour la version avec backend*
-- Git
+- Git installé
+- Navigateur web moderne
+- Compte Supabase (gratuit)
+- Compte GitHub (optionnel pour déploiement)
+- Compte Netlify (optionnel pour déploiement)
 
-### Installation Rapide
+### Installation Locale
 
 1. **Cloner le repository**
 ```bash
-git clone https://github.com/Randria33/aquavision-pro.git
-cd aquavision-pro
+git clone https://github.com/randriz33/AquaVision.git
+cd AquaVision
 ```
 
-2. **Lancer l'application**
-
-Option A : Ouverture directe
+2. **Lancer le serveur local**
 ```bash
-# Ouvrir le fichier dans votre navigateur
-open public/index.html  # macOS
-xdg-open public/index.html  # Linux
-start public/index.html  # Windows
-```
+# Avec Python 3
+python -m http.server 8000 --directory public
 
-Option B : Avec un serveur local
-```bash
-# Python 3
-python -m http.server 8000
-
-# PHP
+# OU avec PHP
 php -S localhost:8000 -t public
 
-# Node.js (avec http-server installé)
+# OU avec Node.js
 npx http-server public -p 8000
 ```
 
 3. **Accéder à l'application**
 ```
-http://localhost:8000
+http://localhost:8000/index-supabase.html
 ```
 
-## Utilisation
-
-### Guide de Démarrage
-
-1. **Vue d'ensemble**
-   - L'application affiche une grille de 8 cages par défaut
-   - Chaque cage montre : numéro, poissons vivants/morts, statut
-
-2. **Modifier une cage**
-   - Cliquez sur une cage pour l'éditer
-   - Entrez le nombre de poissons vivants
-   - Ajoutez les nouvelles pertes
-   - Le système calcule automatiquement
-
-3. **Ajouter une cage**
-   - Cliquez sur "Ajouter une Cage"
-   - Entrez le numéro et la population initiale
-   - La cage apparaît dans la grille
-
-4. **Consulter les alertes**
-   - Le panneau de contrôle affiche les alertes actives
-   - Les cages problématiques sont mises en évidence
-
-### Mode Développement
-
-```javascript
-// Ouvrir la console du navigateur (F12)
-
-// Réinitialiser les données
-aquavisionDev.reset()
-
-// Simuler des changements aléatoires
-aquavisionDev.simulate()
-
-// Exporter les données
-const backup = aquavisionDev.export()
-
-// Voir toutes les cages
-console.table(aquavisionDev.getCages())
+4. **Se connecter**
 ```
+Email: tech1@aquavision.com
+Password: Test1234!
+```
+
+### Configuration Supabase
+
+1. **Créer un projet Supabase**
+   - Allez sur https://supabase.com
+   - Créez un nouveau projet
+   - Notez l'URL et l'anon key
+
+2. **Exécuter le schéma SQL**
+   - Ouvrez SQL Editor dans Supabase
+   - Exécutez le fichier `database/supabase_schema_complete.sql`
+   - Vérifiez que les 8 tables sont créées
+
+3. **Configurer l'application**
+   - Modifiez `public/assets/js/supabase-client.js`
+   - Remplacez `url` et `anonKey` par vos valeurs
+
+4. **Créer un utilisateur test**
+   - Utilisez Supabase Auth pour créer un compte
+   - Confirmez l'email avec SQL:
+```sql
+UPDATE auth.users
+SET email_confirmed_at = NOW()
+WHERE email = 'votre@email.com';
+```
+
+## Déploiement
+
+### Déploiement sur Netlify
+
+1. **Push vers GitHub**
+```bash
+git add .
+git commit -m "Initial commit"
+git push -u origin main
+```
+
+2. **Connecter Netlify**
+   - Allez sur https://app.netlify.com
+   - "Add new site" > "Import from Git"
+   - Sélectionnez votre repository
+   - Configuration automatique via `netlify.toml`
+   - Déployez
+
+3. **Configurer Supabase**
+   - Allez dans Supabase > Authentication > URL Configuration
+   - Ajoutez l'URL Netlify dans "Site URL"
+   - Ajoutez l'URL dans "Redirect URLs"
 
 ## Structure du Projet
 
 ```
-aquavision-pro/
-├── public/                  # Fichiers publics accessibles
-│   ├── index.html          # Page principale de l'application
+AquaVision/
+├── public/                          # Application frontend
+│   ├── index-supabase.html         # Page principale avec Supabase
 │   └── assets/
-│       ├── css/            # Styles et animations
-│       ├── js/             # Scripts JavaScript
-│       │   ├── app.js         # Script principal
-│       │   ├── aquavision-update-manager.js  # Gestionnaire de MAJ
-│       │   └── aquavision-api-mock.js        # API simulée
-│       └── images/         # Images et icônes
-├── app/                    # Code MVC (backend PHP)
-│   ├── Controllers/        # Contrôleurs
-│   ├── Models/            # Modèles de données
-│   ├── Views/             # Vues PHP
-│   └── Core/              # Classes principales
-├── database/              # Base de données
-│   ├── migrations/        # Scripts de migration
-│   └── seeds/             # Données de test
-├── docs/                  # Documentation
-├── README.md              # Ce fichier
-├── composer.json          # Dépendances PHP
-├── package.json           # Dépendances JavaScript
-└── .gitignore            # Fichiers ignorés par Git
+│       ├── css/
+│       │   └── style.css           # Styles complets
+│       └── js/
+│           ├── supabase-client.js   # Client Supabase et API
+│           ├── auth.js              # Gestion authentification
+│           ├── technician-dashboard.js  # Dashboard technicien
+│           └── admin-dashboard.js   # Dashboard admin (WIP)
+├── database/
+│   ├── supabase_schema_complete.sql # Schéma SQL complet (8 tables)
+│   └── migrations/                  # Migrations futures
+├── docs/                            # Documentation
+│   ├── INSTRUCTIONS_COMPLETES.txt   # Guide complet
+│   ├── ENHANCED_DASHBOARD.md        # Doc fonctionnalités
+│   ├── SUPABASE_SETUP.md           # Configuration Supabase
+│   └── README_V2.md                # Guide détaillé
+├── netlify.toml                     # Configuration Netlify
+├── README.md                        # Ce fichier
+└── .gitignore                       # Fichiers ignorés
 ```
 
-## Configuration
+## Base de Données
 
-### Variables d'Environnement (.env)
-```env
-APP_NAME=AquaVision Pro
-APP_ENV=local
-APP_DEBUG=true
-APP_URL=http://localhost:8000
+### Tables Principales
 
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=aquavision
-DB_USERNAME=root
-DB_PASSWORD=
+1. **profiles** - Profils utilisateurs (admin/technicien)
+2. **cages** - Informations des cages avec données biométriques
+3. **daily_reports** - Rapports journaliers optimisés
+4. **biometric_samples** - Échantillons biométriques détaillés
+5. **feed_inventory** - Inventaire des aliments
+6. **production_targets** - Objectifs de production
+7. **alerts** - Système d'alertes
+8. **activity_log** - Journal d'activité
 
-API_UPDATE_INTERVAL=30000  # Intervalle de mise à jour (ms)
-```
+### Fonctions SQL Automatisées
+
+- `calculate_biomass()` - Calcul automatique de la biomasse
+- `calculate_daily_growth_rate()` - Taux de croissance quotidien
+- `calculate_fcr()` - Food Conversion Ratio
+- Triggers automatiques sur insert/update
+
+## Utilisation
+
+### Dashboard Technicien
+
+1. **Vue d'ensemble**
+   - Voir toutes les cages avec leur statut
+   - Progression du jour (X/Y complétées)
+   - Informations rapides (population, biomasse)
+
+2. **Remplir un rapport journalier**
+   - Cliquer sur une cage "En attente"
+   - Renseigner population et mortalité
+   - Ajouter des échantillons biométriques
+   - Entrer les paramètres environnementaux
+   - Enregistrer - Calculs automatiques
+
+3. **Consulter l'historique**
+   - Voir les rapports précédents
+   - Analyser les tendances
+   - Exporter les données (à venir)
+
+### Rôles et Permissions
+
+**Technicien:**
+- Créer des rapports journaliers
+- Voir ses propres rapports
+- Modifier ses rapports du jour
+- Consulter les cages assignées
+
+**Admin:**
+- Toutes les permissions technicien
+- Créer/modifier/supprimer des cages
+- Gérer les utilisateurs
+- Accéder à tous les rapports
+- Voir les logs d'activité
 
 ## API Documentation
 
-### Endpoints Disponibles
+Toutes les opérations passent par `SupabaseService` dans `supabase-client.js`:
 
-#### GET `/api/cages`
-Récupère toutes les cages avec leurs statistiques
-```json
-{
-  "success": true,
-  "cages": [
-    {
-      "id": 1,
-      "cage_number": 1,
-      "initial_count": 200,
-      "alive_count": 185,
-      "total_dead": 15
-    }
-  ]
-}
+### Authentification
+```javascript
+await SupabaseService.signIn(email, password)
+await SupabaseService.signOut()
+await SupabaseService.getCurrentUser()
 ```
 
-#### POST `/api/cages`
-Crée une nouvelle cage
-```json
-// Request
-{
-  "cage_number": 9,
-  "initial_count": 250
-}
+### Cages
+```javascript
+await SupabaseService.getCages()
+await SupabaseService.getCage(cageId)
+await SupabaseService.createCage(cageData)
+await SupabaseService.updateCage(cageId, updates)
 ```
 
-#### PUT `/api/cages/{id}`
-Met à jour une cage existante
-```json
-// Request
-{
-  "alive_count": 180,
-  "new_dead_count": 5
-}
+### Rapports
+```javascript
+await SupabaseService.getDailyReports(filters)
+await SupabaseService.getTodayReport(cageId)
+await SupabaseService.createDailyReport(reportData)
 ```
 
-#### DELETE `/api/cages/{id}`
-Supprime une cage
+## Sécurité
 
-```json
-// Response
-{
-  "success": true,
-  "message": "Cage supprimée avec succès"
-}
-```
+- Authentification JWT via Supabase
+- Row Level Security (RLS) sur toutes les tables
+- Validation côté client et serveur
+- Pas de clés sensibles dans le code (anon key uniquement)
+- HTTPS obligatoire en production
+- CORS configuré correctement
 
-## Améliorations Recommandées
+## Améliorations Futures
 
 ### Priorité Haute
-- [ ] Export des données en CSV/Excel
-- [ ] Graphiques d'évolution historique
-- [ ] Notifications push (service worker)
-- [ ] Mode hors-ligne avec synchronisation
-- [ ] Utiliser des icônes SVG professionnelles (Lucide, Heroicons)
+- [ ] Graphiques de croissance (Chart.js)
+- [ ] Export CSV/Excel des rapports
+- [ ] Dashboard admin complet
+- [ ] Notifications push
+- [ ] Application mobile (React Native)
 
 ### Priorité Moyenne
 - [ ] Filtres et recherche avancée
-- [ ] Comparaison entre périodes
-- [ ] Mode clair/sombre toggle
-- [ ] Amélioration accessibilité (ARIA, contraste)
-- [ ] Système de logs et debugging
+- [ ] Comparaison entre cages
+- [ ] Prédictions ML (croissance)
+- [ ] Intégration capteurs IoT
+- [ ] Mode hors-ligne
 
 ### Priorité Basse
-- [ ] WebSockets pour temps réel
-- [ ] Pagination pour grandes listes
-- [ ] Lazy loading des images
-- [ ] Optimisation animations CSS
-- [ ] Bundling avec Vite/Webpack
-
-### Sécurité
-- [ ] CSRF tokens
-- [ ] Validation et sanitisation des entrées
-- [ ] Rate limiting sur l'API
-- [ ] Authentification JWT avec refresh tokens
-- [ ] Chiffrement des données sensibles
-
-## Roadmap
-
-### Version 1.0 (Actuelle)
-- [x] Interface utilisateur complète
-- [x] Gestion des cages (CRUD)
-- [x] Système d'alertes
-- [x] Statistiques en temps réel
-- [x] Mode développement avec API Mock
-
-### Version 2.0 (Q1 2025)
-- [ ] Backend PHP complet
-- [ ] Base de données MySQL
-- [ ] Authentification utilisateur
-- [ ] Export CSV/PDF
-- [ ] Historique des modifications
-
-### Version 3.0 (Q2 2025)
-- [ ] Application mobile
-- [ ] Intégration IoT (capteurs)
-- [ ] Machine Learning (prédictions)
+- [ ] WebSockets temps réel
 - [ ] Multi-sites
 - [ ] API publique
+- [ ] Système de backup automatique
+
+## Dépannage
+
+### Application bloquée sur "Chargement..."
+- Vérifier F12 > Console pour les erreurs
+- Vérifier que Supabase URL et key sont corrects
+- Vérifier la connexion internet
+
+### "Email not confirmed"
+```sql
+UPDATE auth.users
+SET email_confirmed_at = NOW()
+WHERE email = 'votre@email.com';
+```
+
+### Dashboard vide
+- C'est normal si aucune cage n'existe
+- Créer des cages dans Supabase Table Editor
+- Ou utiliser les seeds (à venir)
+
+### Erreurs CORS
+- Ajouter l'URL de votre site dans Supabase
+- Authentication > URL Configuration
 
 ## Contribution
 
-Les contributions sont les bienvenues ! Pour contribuer :
+Les contributions sont bienvenues !
 
 1. Fork le projet
-2. Créez votre branche (`git checkout -b feature/AmazingFeature`)
-3. Committez vos changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
+2. Créez votre branche (`git checkout -b feature/MaSuperFonctionnalite`)
+3. Committez (`git commit -m 'feat: Ajout super fonctionnalite'`)
+4. Push (`git push origin feature/MaSuperFonctionnalite`)
 5. Ouvrez une Pull Request
-
-### Guidelines
-- Respecter la structure MVC
-- Commenter le code complexe
-- Ajouter des tests si possible
-- Suivre les conventions de nommage
-- Éviter l'utilisation excessive d'emojis dans le code
-
-## Signaler un Bug
-
-Pour signaler un bug, ouvrez une [issue](https://github.com/Randria33/aquavision-pro/issues) avec :
-- Description du problème
-- Étapes pour reproduire
-- Comportement attendu
-- Screenshots si applicable
 
 ## Licence
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+MIT License - Voir [LICENSE](LICENSE) pour plus de détails.
 
 ## Auteur
 
-**Randria33**
-- GitHub: [@Randria33](https://github.com/Randria33)
-
-## Remerciements
-
-- Icônes SVG par Lucide Icons
-- Inspiration design : interfaces futuristes sous-marines
-- Communauté open source
+**randriz33**
+- GitHub: [@randriz33](https://github.com/randriz33)
+- Repository: [AquaVision](https://github.com/randriz33/AquaVision)
 
 ## Support
 
-Pour obtenir de l'aide :
-- Email : contact@aquavision-pro.com
-- Issues : [GitHub Issues](https://github.com/Randria33/aquavision-pro/issues)
-- Wiki : [Documentation complète](https://github.com/Randria33/aquavision-pro/wiki)
+- Issues: [GitHub Issues](https://github.com/randriz33/AquaVision/issues)
+- Documentation: Voir dossier `docs/`
+- Guide complet: `INSTRUCTIONS_COMPLETES.txt`
 
 ---
 
 <div align="center">
-  <p>Fait avec passion pour révolutionner l'aquaculture</p>
-  <p>AquaVision Pro - Gestion intelligente de cages à poissons</p>
+  <p>Version 2.1 - Dashboard Technicien avec Suivi Biométrique Complet</p>
+  <p>AquaVision Pro - Gestion Professionnelle d'Aquaculture</p>
 </div>
