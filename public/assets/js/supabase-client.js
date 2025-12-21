@@ -20,12 +20,12 @@ if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey) {
 // ==========================================
 // Initialize Supabase Client
 // ==========================================
-let supabase = null;
+let supabaseClient = null;
 
 function initializeSupabase() {
-    if (typeof supabase !== 'undefined' && SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey) {
+    if (typeof window.supabase !== 'undefined' && SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey) {
         try {
-            supabase = window.supabase.createClient(
+            supabaseClient = window.supabase.createClient(
                 SUPABASE_CONFIG.url,
                 SUPABASE_CONFIG.anonKey
             );
@@ -44,7 +44,7 @@ function initializeSupabase() {
 // ==========================================
 class SupabaseService {
     static isConfigured() {
-        return supabase !== null;
+        return supabaseClient !== null;
     }
 
     // ==========================================
@@ -53,7 +53,7 @@ class SupabaseService {
 
     static async signUp(email, password, fullName, role = 'technicien') {
         try {
-            const { data, error } = await supabase.auth.signUp({
+            const { data, error } = await supabaseClient.auth.signUp({
                 email,
                 password,
                 options: {
@@ -76,7 +76,7 @@ class SupabaseService {
 
     static async signIn(email, password) {
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email,
                 password
             });
@@ -93,7 +93,7 @@ class SupabaseService {
 
     static async signOut() {
         try {
-            const { error } = await supabase.auth.signOut();
+            const { error } = await supabaseClient.auth.signOut();
             if (error) throw error;
             return { success: true };
         } catch (error) {
@@ -104,7 +104,7 @@ class SupabaseService {
 
     static async getCurrentUser() {
         try {
-            const { data: { user }, error } = await supabase.auth.getUser();
+            const { data: { user }, error } = await supabaseClient.auth.getUser();
             if (error) throw error;
             return user;
         } catch (error) {
@@ -118,7 +118,7 @@ class SupabaseService {
             const uid = userId || (await this.getCurrentUser())?.id;
             if (!uid) return null;
 
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('profiles')
                 .select('*')
                 .eq('id', uid)
@@ -138,7 +138,7 @@ class SupabaseService {
     }
 
     static onAuthStateChange(callback) {
-        return supabase.auth.onAuthStateChanged(callback);
+        return supabaseClient.auth.onAuthStateChanged(callback);
     }
 
     // ==========================================
@@ -147,7 +147,7 @@ class SupabaseService {
 
     static async getCages() {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('cages')
                 .select('*')
                 .eq('status', 'active')
@@ -163,7 +163,7 @@ class SupabaseService {
 
     static async getCage(cageId) {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('cages')
                 .select('*')
                 .eq('id', cageId)
@@ -180,7 +180,7 @@ class SupabaseService {
     static async createCage(cageData) {
         try {
             const user = await this.getCurrentUser();
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('cages')
                 .insert({
                     ...cageData,
@@ -203,7 +203,7 @@ class SupabaseService {
     static async updateCage(cageId, updates) {
         try {
             const user = await this.getCurrentUser();
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('cages')
                 .update({
                     ...updates,
@@ -225,7 +225,7 @@ class SupabaseService {
 
     static async deleteCage(cageId) {
         try {
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('cages')
                 .delete()
                 .eq('id', cageId);
@@ -281,7 +281,7 @@ class SupabaseService {
         try {
             const today = new Date().toISOString().split('T')[0];
 
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('daily_reports')
                 .select('*')
                 .eq('cage_id', cageId)
@@ -300,7 +300,7 @@ class SupabaseService {
     static async createDailyReport(reportData) {
         try {
             const user = await this.getCurrentUser();
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('daily_reports')
                 .insert({
                     ...reportData,
@@ -333,7 +333,7 @@ class SupabaseService {
     static async updateDailyReport(reportId, updates) {
         try {
             const user = await this.getCurrentUser();
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('daily_reports')
                 .update({
                     ...updates,
@@ -359,7 +359,7 @@ class SupabaseService {
 
     static async getActiveAlerts() {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('alerts')
                 .select(`
                     *,
@@ -378,7 +378,7 @@ class SupabaseService {
 
     static async createAlert(alertData) {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('alerts')
                 .insert(alertData)
                 .select()
@@ -395,7 +395,7 @@ class SupabaseService {
     static async resolveAlert(alertId, resolutionNotes) {
         try {
             const user = await this.getCurrentUser();
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('alerts')
                 .update({
                     is_active: false,
@@ -426,7 +426,7 @@ class SupabaseService {
             const user = await this.getCurrentUser();
             if (!user) return;
 
-            await supabase
+            await supabaseClient
                 .from('activity_log')
                 .insert({
                     user_id: user.id,
@@ -504,7 +504,7 @@ class SupabaseService {
 
     static unsubscribe(channel) {
         if (channel) {
-            supabase.removeChannel(channel);
+            supabaseClient.removeChannel(channel);
         }
     }
 }
