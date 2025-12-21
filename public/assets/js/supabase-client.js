@@ -8,8 +8,8 @@
 // ==========================================
 
 const SUPABASE_CONFIG = {
-    url: '', // À remplir avec votre URL Supabase
-    anonKey: '' // À remplir avec votre clé anonyme Supabase
+    url: 'https://gswozuotdrfgvutitssf.supabase.co',
+    anonKey: 'sb_publishable_lBZ4WQtTR-Cqk9JKt1V_EQ_2sBzLU0e'
 };
 
 // Vérifier que la configuration est définie
