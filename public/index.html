@@ -215,11 +215,9 @@
 
                 // Update UI
                 document.getElementById('totalCages').textContent = totalCages;
-                document.getElementById('totalPopulation').textContent = totalPopulation.toLocaleString();
-                document.getElementById('totalBiomass').textContent = totalBiomass.toFixed(1) + ' kg';
-                document.getElementById('totalDead').textContent = totalDead.toLocaleString();
+                document.getElementById('totalAlive').textContent = totalPopulation.toLocaleString();
                 document.getElementById('survivalRate').textContent = survivalRate + '%';
-                document.getElementById('totalReports').textContent = reportsCount || 0;
+                document.getElementById('totalAlerts').textContent = 0; // To be implemented
 
                 // Refresh icons
                 lucide.createIcons();
@@ -228,11 +226,9 @@
                 console.error('Erreur chargement statistiques:', error);
                 // Show fallback values
                 document.getElementById('totalCages').textContent = '-';
-                document.getElementById('totalPopulation').textContent = '-';
-                document.getElementById('totalBiomass').textContent = '-';
-                document.getElementById('totalDead').textContent = '-';
+                document.getElementById('totalAlive').textContent = '-';
                 document.getElementById('survivalRate').textContent = '-';
-                document.getElementById('totalReports').textContent = '-';
+                document.getElementById('totalAlerts').textContent = '-';
             }
         }
 
