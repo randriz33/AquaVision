@@ -209,46 +209,94 @@ class AdminDashboard {
                     </button>
                 </div>
 
-                <div class="cages-table">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Numéro</th>
-                                <th>Emplacement</th>
-                                <th>Espèce</th>
-                                <th>Population</th>
-                                <th>Capacité</th>
-                                <th>Mortalité</th>
-                                <th>Statut</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${this.cages.map(cage => `
+                <!-- Version Desktop: Tableau -->
+                <div class="cages-table-desktop">
+                    <div class="table-responsive">
+                        <table class="data-table cages-data-table">
+                            <thead>
                                 <tr>
-                                    <td><strong>${cage.cage_number}</strong></td>
-                                    <td>${cage.location || '-'}</td>
-                                    <td>${cage.species || '-'}</td>
-                                    <td>${cage.alive_count || 0}</td>
-                                    <td>${cage.capacity || '-'}</td>
-                                    <td>${cage.total_dead || 0}</td>
-                                    <td>
-                                        <span class="badge badge-${cage.status === 'active' ? 'success' : 'warning'}">
-                                            ${cage.status}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-secondary" onclick='AdminDashboard.openEditCageModal(${JSON.stringify(cage).replace(/'/g, "&apos;")})'>
-                                            <i data-lucide="edit-2"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-danger" onclick="AdminDashboard.deleteCage('${cage.id}', '${cage.cage_number}')">
-                                            <i data-lucide="trash-2"></i>
-                                        </button>
-                                    </td>
+                                    <th>Numéro</th>
+                                    <th>Emplacement</th>
+                                    <th>Espèce</th>
+                                    <th>Population</th>
+                                    <th>Capacité</th>
+                                    <th>Mortalité</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
                                 </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                ${this.cages.map(cage => `
+                                    <tr>
+                                        <td><strong>${cage.cage_number}</strong></td>
+                                        <td>${cage.location || '-'}</td>
+                                        <td>${cage.species || '-'}</td>
+                                        <td>${cage.alive_count || 0}</td>
+                                        <td>${cage.capacity || '-'}</td>
+                                        <td>${cage.total_dead || 0}</td>
+                                        <td>
+                                            <span class="badge badge-${cage.status === 'active' ? 'success' : 'warning'}">
+                                                ${cage.status}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-secondary" onclick='AdminDashboard.openEditCageModal(${JSON.stringify(cage).replace(/'/g, "&apos;")})'>
+                                                <i data-lucide="edit-2"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger" onclick="AdminDashboard.deleteCage('${cage.id}', '${cage.cage_number}')">
+                                                <i data-lucide="trash-2"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Version Mobile: Cartes -->
+                <div class="cages-cards-mobile">
+                    ${this.cages.map(cage => `
+                        <div class="cage-card">
+                            <div class="cage-card-header">
+                                <div>
+                                    <h3 class="cage-number">${cage.cage_number}</h3>
+                                    <p class="cage-location">${cage.location || 'Non spécifié'}</p>
+                                </div>
+                                <span class="badge badge-${cage.status === 'active' ? 'success' : 'warning'}">
+                                    ${cage.status}
+                                </span>
+                            </div>
+                            <div class="cage-card-body">
+                                <div class="cage-info-row">
+                                    <span class="info-label">Espèce:</span>
+                                    <span class="info-value">${cage.species || '-'}</span>
+                                </div>
+                                <div class="cage-info-row">
+                                    <span class="info-label">Population:</span>
+                                    <span class="info-value">${cage.alive_count || 0}</span>
+                                </div>
+                                <div class="cage-info-row">
+                                    <span class="info-label">Capacité:</span>
+                                    <span class="info-value">${cage.capacity || '-'}</span>
+                                </div>
+                                <div class="cage-info-row">
+                                    <span class="info-label">Mortalité:</span>
+                                    <span class="info-value">${cage.total_dead || 0}</span>
+                                </div>
+                            </div>
+                            <div class="cage-card-actions">
+                                <button class="btn btn-sm btn-secondary" onclick='AdminDashboard.openEditCageModal(${JSON.stringify(cage).replace(/'/g, "&apos;")})'>
+                                    <i data-lucide="edit-2"></i>
+                                    Modifier
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="AdminDashboard.deleteCage('${cage.id}', '${cage.cage_number}')">
+                                    <i data-lucide="trash-2"></i>
+                                    Supprimer
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
             </section>
         `;
@@ -720,18 +768,131 @@ adminStyles.textContent = `
         padding: 0.75rem;
         text-align: left;
         border-bottom: 1px solid #e2e8f0;
+        color: #1e293b;
     }
 
     .data-table th {
-        background: #f8fafc;
+        background: #f1f5f9;
         font-weight: 600;
         font-size: 0.875rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        color: #0f172a;
+    }
+
+    .data-table tbody tr {
+        background: white;
     }
 
     .data-table tbody tr:hover {
         background: #f8fafc;
+    }
+
+    .data-table tbody td {
+        color: #334155;
+        font-size: 0.9375rem;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Version Mobile: Cartes */
+    .cages-cards-mobile {
+        display: none;
+    }
+
+    .cage-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .cage-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .cage-number {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .cage-location {
+        font-size: 0.875rem;
+        color: #64748b;
+        margin: 0;
+    }
+
+    .cage-card-body {
+        margin-bottom: 1rem;
+    }
+
+    .cage-info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .cage-info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+
+    .info-value {
+        font-weight: 500;
+        color: #1e293b;
+        font-size: 0.9375rem;
+    }
+
+    .cage-card-actions {
+        display: flex;
+        gap: 0.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .cage-card-actions .btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    /* Responsive: Masquer table sur mobile, afficher cartes */
+    @media (max-width: 768px) {
+        .cages-table-desktop {
+            display: none;
+        }
+
+        .cages-cards-mobile {
+            display: block;
+        }
+
+        .section-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+
+        .section-header .btn {
+            width: 100%;
+        }
     }
 
     .badge {
