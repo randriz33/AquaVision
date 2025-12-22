@@ -266,6 +266,7 @@ class TechnicianDashboard {
                     <label class="form-label">
                         <i data-lucide="heart"></i>
                         Poissons Vivants
+                        <small style="color: #64748b; font-weight: normal;"> (calculé automatiquement)</small>
                     </label>
                     <input
                         type="number"
@@ -274,6 +275,8 @@ class TechnicianDashboard {
                         value="${existingReport?.alive_count || this.selectedCage.alive_count}"
                         required
                         min="0"
+                        readonly
+                        style="background-color: #f8fafc; cursor: not-allowed;"
                     >
                 </div>
 
@@ -863,6 +866,27 @@ class TechnicianDashboard {
 
         hasIncidentCheckbox?.addEventListener('change', (e) => {
             incidentFields.style.display = e.target.checked ? 'block' : 'none';
+        });
+
+        // Auto-calculate alive_count when new_dead changes
+        const aliveCountInput = document.getElementById('report_alive_count');
+        const newDeadInput = document.getElementById('report_new_dead');
+        const initialAliveCount = parseInt(aliveCountInput.value);
+
+        newDeadInput?.addEventListener('input', (e) => {
+            const newDead = parseInt(e.target.value) || 0;
+            const calculatedAlive = initialAliveCount - newDead;
+
+            if (calculatedAlive >= 0) {
+                aliveCountInput.value = calculatedAlive;
+            } else {
+                aliveCountInput.value = 0;
+                // Alert if trying to report more deaths than alive count
+                if (newDead > 0) {
+                    e.target.value = initialAliveCount;
+                    alert(`Impossible: le nombre de morts (${newDead}) dépasse la population vivante (${initialAliveCount})`);
+                }
+            }
         });
 
         // Form submit
