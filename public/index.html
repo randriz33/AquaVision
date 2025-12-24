@@ -645,7 +645,7 @@
                 const { data: samples } = await db
                     .from('biometric_samples')
                     .select('weight_grams')
-                    .not('weight_grams', 'is', null)
+                    .gt('weight_grams', 0)
                     .order('created_at', { ascending: false })
                     .limit(100);
 
@@ -656,7 +656,7 @@
                 const { data: reports } = await db
                     .from('daily_reports')
                     .select('water_temp_morning, water_temp_evening')
-                    .not('water_temp_morning', 'is', null)
+                    .gt('water_temp_morning', 0)
                     .order('report_date', { ascending: false })
                     .limit(10);
 
