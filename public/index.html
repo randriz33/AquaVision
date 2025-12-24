@@ -621,7 +621,7 @@
 
         const SUPABASE_URL = 'https://gswozuotdrfgvutitssf.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdzd296dW90ZHJmZ3Z1dGl0c3NmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDA5NzMsImV4cCI6MjA4MTkxNjk3M30.9fivWqGwgVjs6lvKHg-ybWtq1D5EaZ3ZM7Gcz_JZxh0';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         async function loadDashboard() {
             await Promise.all([loadStatistics(), loadCages(), loadRecentReports()]);
@@ -629,7 +629,7 @@
 
         async function loadStatistics() {
             try {
-                const { data: cages, error } = await supabase
+                const { data: cages, error } = await db
                     .from('cages')
                     .select('*')
                     .eq('status', 'active');
@@ -642,7 +642,7 @@
                 const totalInitial = cages.reduce((sum, c) => sum + (c.initial_count || 0), 0);
                 const survivalRate = totalInitial > 0 ? ((totalPopulation / totalInitial) * 100).toFixed(1) : 0;
 
-                const { data: samples } = await supabase
+                const { data: samples } = await db
                     .from('biometric_samples')
                     .select('weight_grams')
                     .not('weight_grams', 'is', null)
@@ -653,7 +653,7 @@
                     ? (samples.reduce((sum, s) => sum + (s.weight_grams || 0), 0) / samples.length).toFixed(0)
                     : 0;
 
-                const { data: reports } = await supabase
+                const { data: reports } = await db
                     .from('daily_reports')
                     .select('water_temp_morning, water_temp_evening')
                     .not('water_temp_morning', 'is', null)
@@ -684,7 +684,7 @@
 
         async function loadCages() {
             try {
-                const { data: cages, error } = await supabase
+                const { data: cages, error } = await db
                     .from('cages')
                     .select('*')
                     .eq('status', 'active')
@@ -733,7 +733,7 @@
 
         async function loadRecentReports() {
             try {
-                const { data: reports, error } = await supabase
+                const { data: reports, error } = await db
                     .from('daily_reports')
                     .select('*')
                     .order('report_date', { ascending: false })
@@ -751,7 +751,7 @@
                 let cagesMap = {};
 
                 if (cageIds.length > 0) {
-                    const { data: cages } = await supabase
+                    const { data: cages } = await db
                         .from('cages')
                         .select('id, cage_number')
                         .in('id', cageIds);
@@ -780,7 +780,7 @@
 
         async function openCageModal(cageId) {
             try {
-                const { data: cage, error } = await supabase
+                const { data: cage, error } = await db
                     .from('cages')
                     .select('*')
                     .eq('id', cageId)
@@ -788,7 +788,7 @@
 
                 if (error) throw error;
 
-                const { data: reports } = await supabase
+                const { data: reports } = await db
                     .from('daily_reports')
                     .select('*')
                     .eq('cage_id', cageId)
