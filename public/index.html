@@ -16,145 +16,530 @@
     <link rel="stylesheet" href="assets/css/style.css">
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
         .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
             color: white;
             padding: 3rem 0;
             text-align: center;
-            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .hero-title {
             font-size: 2.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .hero-subtitle {
             font-size: 1.1rem;
-            opacity: 0.9;
+            opacity: 0.95;
             margin-bottom: 2rem;
         }
 
-        .btn-large {
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero {
             padding: 1rem 2.5rem;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             border-radius: 8px;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 0.75rem;
             transition: all 0.3s;
-            background: white;
-            color: #667eea;
             border: none;
             cursor: pointer;
             text-decoration: none;
         }
 
-        .btn-large:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        .btn-admin {
+            background: white;
+            color: #6366f1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        .loading {
-            font-size: 0.9rem;
-            color: #666;
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        .btn-tech {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-tech:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .main {
+            padding: 2rem 0;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon.primary { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .stat-icon.success { background: linear-gradient(135deg, #10b981, #059669); }
+        .stat-icon.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .stat-icon.danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .stat-icon.info { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .stat-icon.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+        .stat-icon svg {
+            color: white;
+        }
+
+        .stat-info h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 0.5rem;
+        }
+
+        .stat-trend {
+            font-size: 0.875rem;
+            color: #10b981;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-trend.down {
+            color: #ef4444;
+        }
+
+        .dashboard-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .cages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .cage-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .cage-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .cage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .cage-number {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .cage-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .cage-status.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .cage-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .cage-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+
+        .cage-info-label {
+            color: #64748b;
+        }
+
+        .cage-info-value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .reports-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .report-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .report-item:hover {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .report-info {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .report-cage {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1rem;
+        }
+
+        .report-date {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .report-stats {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .report-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #64748b;
+        }
+
+        .report-stat strong {
+            color: #1e293b;
+        }
+
+        .footer {
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .cages-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .report-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .report-stats {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i data-lucide="waves"></i>
-                    <span>AquaVision Pro</span>
-                </div>
-            </div>
-        </div>
-    </header>
-
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="container">
             <h1 class="hero-title">
-                <i data-lucide="waves" style="display: inline-block; vertical-align: middle;"></i>
-                Tableau de Bord AquaVision
+                <i data-lucide="waves" style="display: inline-block; vertical-align: middle; width: 48px; height: 48px;"></i>
+                Tableau de Bord AquaVision Pro
             </h1>
             <p class="hero-subtitle">
-                Suivi en temps réel de votre production aquacole
+                Système de monitoring intelligent pour l'aquaculture en temps réel
             </p>
-            <a href="index-supabase.html" class="btn-large">
-                <i data-lucide="user-check"></i>
-                Accès Technicien
-            </a>
+            <div class="hero-buttons">
+                <a href="index-supabase.html?role=admin" class="btn-hero btn-admin">
+                    <i data-lucide="shield"></i>
+                    Accès Administrateur
+                </a>
+                <a href="index-supabase.html?role=tech" class="btn-hero btn-tech">
+                    <i data-lucide="user-check"></i>
+                    Accès Technicien
+                </a>
+            </div>
         </div>
     </section>
 
     <!-- Main Content -->
     <main class="main">
         <div class="container">
-            <!-- Dashboard Stats -->
-            <section class="dashboard">
-                <h2 class="section-title" style="text-align: center; margin-bottom: 2rem;">
+            <!-- Statistics Overview -->
+            <section>
+                <h2 class="section-title">
                     <i data-lucide="activity"></i>
-                    Statistiques Générales
+                    Vue d'ensemble
                 </h2>
-
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon primary">
-                            <i data-lucide="layers"></i>
-                        </div>
-                        <div class="stat-info">
-                            <p class="stat-label">Cages Actives</p>
-                            <p class="stat-value" id="totalCages">0</p>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon success">
-                            <i data-lucide="fish"></i>
-                        </div>
-                        <div class="stat-info">
-                            <p class="stat-label">Population Totale</p>
-                            <p class="stat-value" id="totalAlive">0</p>
+                        <div class="stat-header">
+                            <div class="stat-icon primary">
+                                <i data-lucide="layers"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Cages Actives</h3>
+                                <div class="stat-value" id="totalCages">-</div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="stat-card">
-                        <div class="stat-icon warning">
-                            <i data-lucide="percent"></i>
-                        </div>
-                        <div class="stat-info">
-                            <p class="stat-label">Taux de Survie</p>
-                            <p class="stat-value" id="survivalRate">0%</p>
+                        <div class="stat-header">
+                            <div class="stat-icon success">
+                                <i data-lucide="fish"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Population Totale</h3>
+                                <div class="stat-value" id="totalAlive">-</div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="stat-card">
-                        <div class="stat-icon danger">
-                            <i data-lucide="alert-triangle"></i>
+                        <div class="stat-header">
+                            <div class="stat-icon warning">
+                                <i data-lucide="percent"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Taux de Survie</h3>
+                                <div class="stat-value" id="survivalRate">-</div>
+                            </div>
                         </div>
-                        <div class="stat-info">
-                            <p class="stat-label">Alertes Actives</p>
-                            <p class="stat-value" id="totalAlerts">0</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon danger">
+                                <i data-lucide="alert-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Mortalité Totale</h3>
+                                <div class="stat-value" id="totalDead">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon info">
+                                <i data-lucide="scale"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Biomasse Totale</h3>
+                                <div class="stat-value" id="totalBiomass">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon purple">
+                                <i data-lucide="file-text"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Rapports ce mois</h3>
+                                <div class="stat-value" id="reportsCount">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon success">
+                                <i data-lucide="trending-up"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Poids Moyen</h3>
+                                <div class="stat-value" id="avgWeight">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon warning">
+                                <i data-lucide="thermometer"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Temp Moyenne</h3>
+                                <div class="stat-value" id="avgTemp">-</div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- CTA Section -->
-                <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: #f8f9fa; border-radius: 12px;">
-                    <h3 style="margin-bottom: 1rem;">Espace Technicien</h3>
-                    <p style="color: #666; margin-bottom: 1.5rem;">
-                        Connectez-vous pour gérer les cages, enregistrer les données quotidiennes et suivre la production
-                    </p>
-                    <a href="index-supabase.html" class="btn btn-primary" style="padding: 0.875rem 2rem; font-size: 1.1rem;">
-                        <i data-lucide="log-in"></i>
-                        Se Connecter
-                    </a>
+            <!-- Active Cages -->
+            <section class="dashboard-section">
+                <h2 class="section-title">
+                    <i data-lucide="box"></i>
+                    Cages Actives
+                </h2>
+                <div id="cagesContainer" class="cages-grid">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Chargement des cages...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Reports -->
+            <section class="dashboard-section">
+                <h2 class="section-title">
+                    <i data-lucide="clipboard"></i>
+                    Rapports Récents
+                </h2>
+                <div id="reportsContainer" class="reports-list">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Chargement des rapports...</p>
+                    </div>
                 </div>
             </section>
         </div>
@@ -178,13 +563,22 @@
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Fetch public statistics
-        async function loadPublicStats() {
+        // Load all data
+        async function loadDashboard() {
+            await Promise.all([
+                loadStatistics(),
+                loadCages(),
+                loadRecentReports()
+            ]);
+        }
+
+        // Fetch and display statistics
+        async function loadStatistics() {
             try {
                 // Fetch cages data
                 const { data: cages, error: cagesError } = await supabase
                     .from('cages')
-                    .select('alive_count, total_dead, current_biomass, initial_count')
+                    .select('*')
                     .eq('status', 'active');
 
                 if (cagesError) throw cagesError;
@@ -201,7 +595,7 @@
                     ? ((totalPopulation / totalInitial) * 100).toFixed(1)
                     : 0;
 
-                // Fetch reports count for this month
+                // Fetch reports for this month
                 const startOfMonth = new Date();
                 startOfMonth.setDate(1);
                 startOfMonth.setHours(0, 0, 0, 0);
@@ -213,30 +607,192 @@
 
                 if (reportsError) throw reportsError;
 
+                // Fetch biometric samples for average weight
+                const { data: samples, error: samplesError } = await supabase
+                    .from('biometric_samples')
+                    .select('weight_grams')
+                    .not('weight_grams', 'is', null)
+                    .order('created_at', { ascending: false })
+                    .limit(100);
+
+                let avgWeight = 0;
+                if (samples && samples.length > 0) {
+                    const totalWeight = samples.reduce((sum, s) => sum + (s.weight_grams || 0), 0);
+                    avgWeight = (totalWeight / samples.length).toFixed(0);
+                }
+
+                // Fetch recent reports for average temperature
+                const { data: recentReports, error: tempError } = await supabase
+                    .from('daily_reports')
+                    .select('water_temp_morning, water_temp_evening')
+                    .not('water_temp_morning', 'is', null)
+                    .order('report_date', { ascending: false })
+                    .limit(10);
+
+                let avgTemp = 0;
+                if (recentReports && recentReports.length > 0) {
+                    const temps = [];
+                    recentReports.forEach(r => {
+                        if (r.water_temp_morning) temps.push(r.water_temp_morning);
+                        if (r.water_temp_evening) temps.push(r.water_temp_evening);
+                    });
+                    if (temps.length > 0) {
+                        avgTemp = (temps.reduce((sum, t) => sum + t, 0) / temps.length).toFixed(1);
+                    }
+                }
+
                 // Update UI
                 document.getElementById('totalCages').textContent = totalCages;
                 document.getElementById('totalAlive').textContent = totalPopulation.toLocaleString();
                 document.getElementById('survivalRate').textContent = survivalRate + '%';
-                document.getElementById('totalAlerts').textContent = 0; // To be implemented
+                document.getElementById('totalDead').textContent = totalDead.toLocaleString();
+                document.getElementById('totalBiomass').textContent = totalBiomass.toFixed(1) + ' kg';
+                document.getElementById('reportsCount').textContent = reportsCount || 0;
+                document.getElementById('avgWeight').textContent = avgWeight ? avgWeight + ' g' : 'N/A';
+                document.getElementById('avgTemp').textContent = avgTemp ? avgTemp + ' °C' : 'N/A';
 
-                // Refresh icons
                 lucide.createIcons();
 
             } catch (error) {
                 console.error('Erreur chargement statistiques:', error);
-                // Show fallback values
-                document.getElementById('totalCages').textContent = '-';
-                document.getElementById('totalAlive').textContent = '-';
-                document.getElementById('survivalRate').textContent = '-';
-                document.getElementById('totalAlerts').textContent = '-';
+                document.getElementById('totalCages').textContent = 'Err';
+                document.getElementById('totalAlive').textContent = 'Err';
+                document.getElementById('survivalRate').textContent = 'Err';
+                document.getElementById('totalDead').textContent = 'Err';
+                document.getElementById('totalBiomass').textContent = 'Err';
+                document.getElementById('reportsCount').textContent = 'Err';
+                document.getElementById('avgWeight').textContent = 'Err';
+                document.getElementById('avgTemp').textContent = 'Err';
             }
         }
 
-        // Load stats on page load
+        // Load cages
+        async function loadCages() {
+            try {
+                const { data: cages, error } = await supabase
+                    .from('cages')
+                    .select('*')
+                    .eq('status', 'active')
+                    .order('cage_number');
+
+                if (error) throw error;
+
+                const container = document.getElementById('cagesContainer');
+
+                if (!cages || cages.length === 0) {
+                    container.innerHTML = '<p class="loading-state">Aucune cage active</p>';
+                    return;
+                }
+
+                container.innerHTML = cages.map(cage => `
+                    <div class="cage-card">
+                        <div class="cage-header">
+                            <div class="cage-number">${cage.cage_number}</div>
+                            <span class="cage-status active">Actif</span>
+                        </div>
+                        <div class="cage-info">
+                            <div class="cage-info-row">
+                                <span class="cage-info-label">Emplacement:</span>
+                                <span class="cage-info-value">${cage.location || 'N/A'}</span>
+                            </div>
+                            <div class="cage-info-row">
+                                <span class="cage-info-label">Espèce:</span>
+                                <span class="cage-info-value">${cage.species || 'N/A'}</span>
+                            </div>
+                            <div class="cage-info-row">
+                                <span class="cage-info-label">Population:</span>
+                                <span class="cage-info-value">${(cage.alive_count || 0).toLocaleString()} poissons</span>
+                            </div>
+                            <div class="cage-info-row">
+                                <span class="cage-info-label">Mortalité:</span>
+                                <span class="cage-info-value">${cage.total_dead || 0} morts</span>
+                            </div>
+                            <div class="cage-info-row">
+                                <span class="cage-info-label">Biomasse:</span>
+                                <span class="cage-info-value">${(cage.current_biomass || 0).toFixed(1)} kg</span>
+                            </div>
+                            <div class="cage-info-row">
+                                <span class="cage-info-label">Capacité:</span>
+                                <span class="cage-info-value">${cage.max_capacity || 0} kg</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                lucide.createIcons();
+
+            } catch (error) {
+                console.error('Erreur chargement cages:', error);
+                document.getElementById('cagesContainer').innerHTML =
+                    '<p class="loading-state" style="color: #ef4444;">Erreur de chargement des cages</p>';
+            }
+        }
+
+        // Load recent reports
+        async function loadRecentReports() {
+            try {
+                const { data: reports, error } = await supabase
+                    .from('daily_reports')
+                    .select(`
+                        *,
+                        cage:cages(cage_number),
+                        user:profiles(full_name)
+                    `)
+                    .order('report_date', { ascending: false })
+                    .limit(10);
+
+                if (error) throw error;
+
+                const container = document.getElementById('reportsContainer');
+
+                if (!reports || reports.length === 0) {
+                    container.innerHTML = '<p class="loading-state">Aucun rapport disponible</p>';
+                    return;
+                }
+
+                container.innerHTML = reports.map(report => `
+                    <div class="report-item">
+                        <div class="report-info">
+                            <div>
+                                <div class="report-cage">${report.cage?.cage_number || 'N/A'}</div>
+                                <div class="report-date">${new Date(report.report_date).toLocaleDateString('fr-FR', {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric'
+                                })}</div>
+                            </div>
+                        </div>
+                        <div class="report-stats">
+                            <div class="report-stat">
+                                <i data-lucide="fish" style="width: 16px; height: 16px;"></i>
+                                <span>Vivants: <strong>${(report.alive_count || 0).toLocaleString()}</strong></span>
+                            </div>
+                            <div class="report-stat">
+                                <i data-lucide="x-circle" style="width: 16px; height: 16px;"></i>
+                                <span>Morts: <strong>${report.new_dead || 0}</strong></span>
+                            </div>
+                            <div class="report-stat">
+                                <i data-lucide="heart-pulse" style="width: 16px; height: 16px;"></i>
+                                <span>Santé: <strong>${report.health_score || 'N/A'}/10</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                lucide.createIcons();
+
+            } catch (error) {
+                console.error('Erreur chargement rapports:', error);
+                document.getElementById('reportsContainer').innerHTML =
+                    '<p class="loading-state" style="color: #ef4444;">Erreur de chargement des rapports</p>';
+            }
+        }
+
+        // Load dashboard on page load
         document.addEventListener('DOMContentLoaded', () => {
-            loadPublicStats();
-            // Refresh every 30 seconds
-            setInterval(loadPublicStats, 30000);
+            loadDashboard();
+            // Refresh every 60 seconds
+            setInterval(loadDashboard, 60000);
         });
     </script>
 </body>
