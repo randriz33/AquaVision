@@ -45,9 +45,6 @@ temp/
 *.backup
 backup/
 
-# Archives
-_ARCHIVES/
-
 # PHP
 composer.phar
 composer.lock
