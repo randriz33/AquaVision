@@ -8,6 +8,9 @@
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -265,6 +268,12 @@
     <header class="header">
         <h1>🐟 AquaVision Pro - Tableau de Bord</h1>
         <div class="header-actions">
+            <button class="btn" onclick="exportAllToExcel()" title="Exporter toutes les cages en Excel">
+                📥 Export Excel
+            </button>
+            <button class="btn" onclick="openAddCageModal()">
+                ➕ Ajouter Cage
+            </button>
             <button class="btn btn-admin" onclick="window.location.href='index-supabase.html?role=admin'">
                 👨‍💼 Admin
             </button>
@@ -294,6 +303,129 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Ajouter Cage -->
+    <div class="modal" id="addCageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>➕ Ajouter une Nouvelle Cage</h2>
+                <button class="modal-close" onclick="closeAddCageModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addCageForm" onsubmit="submitAddCage(event)">
+                    <div class="detail-section">
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Numéro de Cage <span style="color: #e74c3c;">*</span></label>
+                                <input type="text" id="new_cage_number" class="form-input" required placeholder="Ex: N°24">
+                            </div>
+                            <div class="detail-item">
+                                <label>Emplacement <span style="color: #e74c3c;">*</span></label>
+                                <input type="text" id="new_location" class="form-input" required placeholder="Ex: Zone A">
+                            </div>
+                            <div class="detail-item">
+                                <label>Espèce <span style="color: #e74c3c;">*</span></label>
+                                <input type="text" id="new_species" class="form-input" required placeholder="Ex: Tilapia" value="Tilapia">
+                            </div>
+                            <div class="detail-item">
+                                <label>Capacité (kg) <span style="color: #e74c3c;">*</span></label>
+                                <input type="number" id="new_capacity" class="form-input" required value="1000" min="0">
+                            </div>
+                            <div class="detail-item">
+                                <label>Date d'Ensemencement <span style="color: #e74c3c;">*</span></label>
+                                <input type="date" id="new_stocking_date" class="form-input" required>
+                            </div>
+                            <div class="detail-item">
+                                <label>Population Initiale <span style="color: #e74c3c;">*</span></label>
+                                <input type="number" id="new_initial_count" class="form-input" required placeholder="Ex: 2000" min="0">
+                            </div>
+                            <div class="detail-item">
+                                <label>Statut</label>
+                                <select id="new_status" class="form-input">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="maintenance">Maintenance</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="detail-item" style="margin-top: 1rem;">
+                            <label>Notes</label>
+                            <textarea id="new_notes" class="form-input" rows="3" placeholder="Remarques ou observations..."></textarea>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                        <button type="submit" class="btn btn-success" style="flex: 1;">
+                            ✅ Créer la Cage
+                        </button>
+                        <button type="button" class="btn" style="flex: 1;" onclick="closeAddCageModal()">
+                            ❌ Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Historique -->
+    <div class="modal" id="historyModal">
+        <div class="modal-content" style="max-width: 1200px;">
+            <div class="modal-header">
+                <h2>📊 Historique - Cage <span id="historyCageNumber"></span></h2>
+                <button class="modal-close" onclick="closeHistoryModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="historyModalBody">
+                <!-- Le contenu sera injecté ici -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form input styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .form-input {
+                width: 100%;
+                padding: 0.75rem;
+                border: 2px solid #e0e0e0;
+                border-radius: 5px;
+                font-size: 1rem;
+                transition: border-color 0.3s ease;
+            }
+            .form-input:focus {
+                outline: none;
+                border-color: #3498db;
+            }
+            textarea.form-input {
+                resize: vertical;
+                font-family: inherit;
+            }
+            .history-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 1rem;
+            }
+            .history-table th,
+            .history-table td {
+                padding: 0.75rem;
+                text-align: left;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            .history-table th {
+                background: #f8f9fa;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+            .history-table tr:hover {
+                background: #f8f9fa;
+            }
+            .history-loading {
+                text-align: center;
+                padding: 3rem;
+                color: #7f8c8d;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 
     <script>
         // Supabase Configuration
@@ -712,11 +844,11 @@
                     <button class="btn btn-success" style="flex: 1;" onclick="window.location.href='simple-entry.html?cage=${cage.id}'">
                         ✏️ Saisir les données
                     </button>
-                    <button class="btn" style="flex: 1;" onclick="alert('Fonctionnalité à venir')">
+                    <button class="btn" style="flex: 1;" onclick="openHistory('${cage.id}')">
                         📊 Voir l'historique
                     </button>
-                    <button class="btn" style="flex: 1;" onclick="alert('Fonctionnalité à venir')">
-                        📥 Exporter rapport
+                    <button class="btn" style="flex: 1;" onclick="exportCageToExcel('${cage.id}')">
+                        📥 Exporter Excel
                     </button>
                 </div>
             `;
@@ -739,6 +871,312 @@
             grid.innerHTML = cages.map(cage => createCageCard(cage)).join('');
         }
 
+        // ========================================
+        // ADD CAGE FUNCTIONS
+        // ========================================
+
+        function openAddCageModal() {
+            document.getElementById('addCageModal').style.display = 'block';
+            // Set default date to today
+            document.getElementById('new_stocking_date').valueAsDate = new Date();
+        }
+
+        function closeAddCageModal() {
+            document.getElementById('addCageModal').style.display = 'none';
+            document.getElementById('addCageForm').reset();
+        }
+
+        async function submitAddCage(event) {
+            event.preventDefault();
+
+            const cageData = {
+                cage_number: document.getElementById('new_cage_number').value,
+                location: document.getElementById('new_location').value,
+                species: document.getElementById('new_species').value,
+                capacity: parseInt(document.getElementById('new_capacity').value),
+                stocking_date: document.getElementById('new_stocking_date').value,
+                initial_count: parseInt(document.getElementById('new_initial_count').value),
+                alive_count: parseInt(document.getElementById('new_initial_count').value),
+                total_dead: 0,
+                status: document.getElementById('new_status').value,
+                notes: document.getElementById('new_notes').value || null,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
+
+            try {
+                const { data, error } = await db
+                    .from('cages')
+                    .insert([cageData])
+                    .select();
+
+                if (error) throw error;
+
+                alert('✅ Cage créée avec succès !');
+                closeAddCageModal();
+
+                // Reload dashboard
+                await loadDashboard();
+
+            } catch (error) {
+                console.error('Erreur création cage:', error);
+                alert('❌ Erreur lors de la création: ' + error.message);
+            }
+        }
+
+        // ========================================
+        // HISTORY FUNCTIONS
+        // ========================================
+
+        async function openHistory(cageId) {
+            const cage = allCages.find(c => c.id === cageId);
+            if (!cage) return;
+
+            document.getElementById('historyCageNumber').textContent = cage.cage_number;
+            document.getElementById('historyModalBody').innerHTML = '<div class="history-loading">Chargement de l\'historique...</div>';
+            document.getElementById('historyModal').style.display = 'block';
+
+            try {
+                // Charger tous les rapports pour cette cage
+                const { data: reports, error } = await db
+                    .from('daily_reports')
+                    .select('*')
+                    .eq('cage_id', cageId)
+                    .order('report_date', { ascending: false });
+
+                if (error) throw error;
+
+                if (!reports || reports.length === 0) {
+                    document.getElementById('historyModalBody').innerHTML = '<div class="history-loading"><p>Aucun rapport trouvé pour cette cage.</p></div>';
+                    return;
+                }
+
+                // Créer le tableau d'historique
+                let html = `
+                    <div style="margin-bottom: 1rem;">
+                        <button class="btn btn-success" onclick="exportHistoryToExcel('${cageId}')">
+                            📥 Exporter tout l'historique en Excel
+                        </button>
+                    </div>
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Vivants</th>
+                                <th>Morts</th>
+                                <th>Ti2 (kg)</th>
+                                <th>Ti3 (kg)</th>
+                                <th>Ti4 (kg)</th>
+                                <th>Temp. (°C)</th>
+                                <th>pH</th>
+                                <th>O₂ (mg/L)</th>
+                                <th>Santé</th>
+                                <th>Remarques</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                reports.forEach(report => {
+                    html += `
+                        <tr>
+                            <td>${new Date(report.report_date).toLocaleDateString('fr-FR')}</td>
+                            <td>${report.alive_count || '-'}</td>
+                            <td style="color: ${report.new_dead > 0 ? '#e74c3c' : 'inherit'};">${report.new_dead || 0}</td>
+                            <td>${report.ti2_consumed_kg?.toFixed(1) || '-'}</td>
+                            <td>${report.ti3_consumed_kg?.toFixed(1) || '-'}</td>
+                            <td>${report.ti4_consumed_kg?.toFixed(1) || '-'}</td>
+                            <td>${report.water_temp || '-'}</td>
+                            <td>${report.ph || '-'}</td>
+                            <td>${report.oxygen || '-'}</td>
+                            <td>${report.health_score ? report.health_score + '/10' : '-'}</td>
+                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${report.remarks || ''}">${report.remarks || '-'}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 1rem; color: #7f8c8d; font-size: 0.9rem;">
+                        <strong>${reports.length}</strong> rapports trouvés
+                    </div>
+                `;
+
+                document.getElementById('historyModalBody').innerHTML = html;
+
+            } catch (error) {
+                console.error('Erreur chargement historique:', error);
+                document.getElementById('historyModalBody').innerHTML = '<div class="history-loading"><p style="color: #e74c3c;">Erreur de chargement.</p></div>';
+            }
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').style.display = 'none';
+        }
+
+        // ========================================
+        // EXPORT EXCEL FUNCTIONS
+        // ========================================
+
+        async function exportCageToExcel(cageId) {
+            const cage = allCages.find(c => c.id === cageId);
+            if (!cage) return;
+
+            try {
+                // Charger les rapports
+                const { data: reports, error } = await db
+                    .from('daily_reports')
+                    .select('*')
+                    .eq('cage_id', cageId)
+                    .order('report_date', { ascending: false });
+
+                if (error) throw error;
+
+                if (!reports || reports.length === 0) {
+                    alert('Aucun rapport à exporter pour cette cage.');
+                    return;
+                }
+
+                // Préparer les données pour Excel
+                const exportData = reports.map(report => ({
+                    'Date': new Date(report.report_date).toLocaleDateString('fr-FR'),
+                    'Population Vivante': report.alive_count || 0,
+                    'Nouveaux Décès': report.new_dead || 0,
+                    'Raison Décès': report.dead_reason || '-',
+                    'Ti2 Consommés (kg)': report.ti2_consumed_kg || 0,
+                    'Ti3 Consommés (kg)': report.ti3_consumed_kg || 0,
+                    'Ti4 Consommés (kg)': report.ti4_consumed_kg || 0,
+                    'Type Aliment': report.feed_type || '-',
+                    'Acceptation': report.feed_acceptance || '-',
+                    'Temp. Eau (°C)': report.water_temp || '-',
+                    'pH': report.ph || '-',
+                    'Oxygène (mg/L)': report.oxygen || '-',
+                    'Salinité (ppt)': report.salinity || '-',
+                    'Score Santé': report.health_score || '-',
+                    'Comportement': report.fish_behavior || '-',
+                    'Signes Maladie': report.disease_signs || '-',
+                    'Poids Moyen (g)': report.average_weight_g || '-',
+                    'Longueur Moyenne (cm)': report.average_length_cm || '-',
+                    'Biomasse (kg)': report.total_biomass_kg || '-',
+                    'Remarques': report.remarks || '-'
+                }));
+
+                // Créer le workbook
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(exportData);
+
+                // Ajuster la largeur des colonnes
+                const colWidths = [
+                    { wch: 12 }, // Date
+                    { wch: 18 }, // Population
+                    { wch: 15 }, // Décès
+                    { wch: 15 }, // Raison
+                    { wch: 15 }, // Ti2
+                    { wch: 15 }, // Ti3
+                    { wch: 15 }, // Ti4
+                    { wch: 15 }, // Type aliment
+                    { wch: 12 }, // Acceptation
+                    { wch: 12 }, // Temp
+                    { wch: 8 },  // pH
+                    { wch: 12 }, // O2
+                    { wch: 12 }, // Salinité
+                    { wch: 12 }, // Score
+                    { wch: 15 }, // Comportement
+                    { wch: 20 }, // Maladie
+                    { wch: 15 }, // Poids
+                    { wch: 18 }, // Longueur
+                    { wch: 12 }, // Biomasse
+                    { wch: 40 }  // Remarques
+                ];
+                ws['!cols'] = colWidths;
+
+                XLSX.utils.book_append_sheet(wb, ws, 'Rapports');
+
+                // Ajouter une feuille avec les infos de la cage
+                const cageInfo = [{
+                    'Numéro Cage': cage.cage_number,
+                    'Emplacement': cage.location,
+                    'Espèce': cage.species,
+                    'Population Initiale': cage.initial_count,
+                    'Population Actuelle': cage.alive_count,
+                    'Total Décès': cage.total_dead,
+                    'Date Ensemencement': new Date(cage.stocking_date).toLocaleDateString('fr-FR'),
+                    'Capacité (kg)': cage.capacity,
+                    'Statut': cage.status
+                }];
+                const ws2 = XLSX.utils.json_to_sheet(cageInfo);
+                XLSX.utils.book_append_sheet(wb, ws2, 'Infos Cage');
+
+                // Télécharger le fichier
+                const fileName = `Cage_${cage.cage_number}_${new Date().toISOString().split('T')[0]}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+
+                alert('✅ Export Excel terminé !');
+
+            } catch (error) {
+                console.error('Erreur export Excel:', error);
+                alert('❌ Erreur lors de l\'export: ' + error.message);
+            }
+        }
+
+        async function exportHistoryToExcel(cageId) {
+            // Utilise la même fonction que exportCageToExcel
+            await exportCageToExcel(cageId);
+            closeHistoryModal();
+        }
+
+        // ========================================
+        // EXPORT ALL DATA
+        // ========================================
+
+        async function exportAllToExcel() {
+            try {
+                if (allCages.length === 0) {
+                    alert('Aucune cage à exporter.');
+                    return;
+                }
+
+                // Préparer les données de toutes les cages
+                const exportData = allCages.map(cage => ({
+                    'Numéro': cage.cage_number,
+                    'Emplacement': cage.location,
+                    'Espèce': cage.species,
+                    'Capacité (kg)': cage.capacity,
+                    'Date Ensemencement': new Date(cage.stocking_date).toLocaleDateString('fr-FR'),
+                    'Population Initiale': cage.initial_count,
+                    'Population Actuelle': cage.alive_count,
+                    'Total Décès': cage.total_dead,
+                    'Taux Survie (%)': cage.initial_count > 0 ? ((cage.alive_count / cage.initial_count) * 100).toFixed(1) : 0,
+                    'Ti2 Consommés (kg)': cage.totalTi2?.toFixed(1) || 0,
+                    'Ti3 Consommés (kg)': cage.totalTi3?.toFixed(1) || 0,
+                    'Ti4 Consommés (kg)': cage.totalTi4?.toFixed(1) || 0,
+                    'Statut': cage.status
+                }));
+
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(exportData);
+
+                // Largeurs colonnes
+                ws['!cols'] = [
+                    { wch: 10 }, { wch: 15 }, { wch: 12 }, { wch: 12 },
+                    { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 15 },
+                    { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 10 }
+                ];
+
+                XLSX.utils.book_append_sheet(wb, ws, 'Toutes les Cages');
+
+                const fileName = `AquaVision_Toutes_Cages_${new Date().toISOString().split('T')[0]}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+
+                alert('✅ Export de toutes les cages terminé !');
+
+            } catch (error) {
+                console.error('Erreur export:', error);
+                alert('❌ Erreur lors de l\'export: ' + error.message);
+            }
+        }
+
         // Initialize
         window.onload = function() {
             loadDashboard();
@@ -746,8 +1184,16 @@
 
         // Close modal on outside click
         window.onclick = function(event) {
-            if (event.target == document.getElementById('detailsModal')) {
+            const detailsModal = document.getElementById('detailsModal');
+            const addCageModal = document.getElementById('addCageModal');
+            const historyModal = document.getElementById('historyModal');
+
+            if (event.target == detailsModal) {
                 closeModal();
+            } else if (event.target == addCageModal) {
+                closeAddCageModal();
+            } else if (event.target == historyModal) {
+                closeHistoryModal();
             }
         };
     </script>
