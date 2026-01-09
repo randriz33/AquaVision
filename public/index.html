@@ -268,7 +268,7 @@
             <button class="btn btn-admin" onclick="window.location.href='index-supabase.html?role=admin'">
                 👨‍💼 Admin
             </button>
-            <button class="btn btn-success" onclick="window.location.href='index-supabase.html?role=tech'">
+            <button class="btn btn-success" onclick="window.location.href='simple-entry.html'">
                 👨‍🔧 Technicien
             </button>
         </div>
@@ -329,11 +329,17 @@
                     cage.reports = reports || [];
                     cage.lastReport = reports && reports.length > 0 ? reports[0] : null;
 
-                    // Calculer les totaux d'alimentation des 30 derniers jours
+                    // Calculer les totaux d'alimentation
                     if (reports && reports.length > 0) {
                         cage.totalFeeding = reports.reduce((sum, r) => sum + (r.feeding_kg || 0), 0);
+                        cage.totalTi2 = reports.reduce((sum, r) => sum + (r.ti2_consumed_kg || 0), 0);
+                        cage.totalTi3 = reports.reduce((sum, r) => sum + (r.ti3_consumed_kg || 0), 0);
+                        cage.totalTi4 = reports.reduce((sum, r) => sum + (r.ti4_consumed_kg || 0), 0);
                     } else {
                         cage.totalFeeding = 0;
+                        cage.totalTi2 = 0;
+                        cage.totalTi3 = 0;
+                        cage.totalTi4 = 0;
                     }
                 }
 
@@ -410,8 +416,16 @@
                             <span class="info-value negative">${cage.total_dead || 0} unité</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">Aliments consommés</span>
-                            <span class="info-value">${cage.totalFeeding.toFixed(1)} kg</span>
+                            <span class="info-label">Ti2 consommés</span>
+                            <span class="info-value">${cage.totalTi2.toFixed(1)} kg</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Ti3 consommés</span>
+                            <span class="info-value">${cage.totalTi3.toFixed(1)} kg</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Ti4 consommés</span>
+                            <span class="info-value">${cage.totalTi4.toFixed(1)} kg</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Biomasse estimée</span>
@@ -579,12 +593,16 @@
                     <h3>🍽️ Alimentation</h3>
                     <div class="detail-grid">
                         <div class="detail-item">
-                            <label>Aliments consommés (période)</label>
-                            <div class="value">${cage.totalFeeding.toFixed(1)} kg</div>
+                            <label>Ti2 consommés (période)</label>
+                            <div class="value">${cage.totalTi2.toFixed(1)} kg</div>
                         </div>
                         <div class="detail-item">
-                            <label>Dernier repas</label>
-                            <div class="value">${lastReport.feeding_kg || 'N/A'} kg</div>
+                            <label>Ti3 consommés (période)</label>
+                            <div class="value">${cage.totalTi3.toFixed(1)} kg</div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Ti4 consommés (période)</label>
+                            <div class="value">${cage.totalTi4.toFixed(1)} kg</div>
                         </div>
                         <div class="detail-item">
                             <label>Type d'aliment</label>
@@ -691,8 +709,8 @@
 
                 <!-- Actions -->
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                    <button class="btn btn-success" style="flex: 1;" onclick="window.location.href='index-supabase.html?role=tech&cage=${cage.id}'">
-                        ✏️ Modifier les données
+                    <button class="btn btn-success" style="flex: 1;" onclick="window.location.href='simple-entry.html?cage=${cage.id}'">
+                        ✏️ Saisir les données
                     </button>
                     <button class="btn" style="flex: 1;" onclick="alert('Fonctionnalité à venir')">
                         📊 Voir l'historique

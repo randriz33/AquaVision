@@ -56,6 +56,9 @@
 - nitrite (DECIMAL)
 - nitrate (DECIMAL)
 - feeding_kg (DECIMAL)
+- ti2_consumed_kg (DECIMAL) ✨ NOUVEAU
+- ti3_consumed_kg (DECIMAL) ✨ NOUVEAU
+- ti4_consumed_kg (DECIMAL) ✨ NOUVEAU
 - feeding_time (TIME)
 - feeding_times_per_day (INTEGER)
 - feed_type (TEXT)

@@ -9,7 +9,16 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git remote:*)",
-      "Bash(python -m http.server:*)"
+      "Bash(python -m http.server:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(ls:*)",
+      "Bash(git config:*)",
+      "Bash(cmdkey:*)",
+      "Bash(findstr:*)",
+      "Bash(git credential-manager:*)",
+      "Bash(netstat:*)",
+      "Bash(node -c:*)",
+      "Bash(node:*)"
     ]
   }
 }
