@@ -391,7 +391,7 @@ CREATE POLICY "Admins can manage cages" ON public.cages FOR ALL USING (EXISTS (S
 
 -- Politiques pour daily_reports
 CREATE POLICY "Everyone can view reports" ON public.daily_reports FOR SELECT USING (auth.uid() IS NOT NULL);
-CREATE POLICY "Everyone can create reports" ON public.daily_reports FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "Everyone can create reports" ON public.daily_reports FOR INSERT WITH CHECK (auth.uid() IS NOT NULL AND created_by = auth.uid());
 CREATE POLICY "Users can update own reports" ON public.daily_reports FOR UPDATE USING (created_by = auth.uid());
 CREATE POLICY "Admins can update all reports" ON public.daily_reports FOR UPDATE USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
 
@@ -480,6 +480,8 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
