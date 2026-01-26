@@ -95,17 +95,36 @@
             anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdzd296dW90ZHJmZ3Z1dGl0c3NmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDA5NzMsImV4cCI6MjA4MTkxNjk3M30.9fivWqGwgVjs6lvKHg-ybWtq1D5EaZ3ZM7Gcz_JZxh0'
         };
 
-        const supabase = window.supabase.createClient(
-            SUPABASE_CONFIG.url,
-            SUPABASE_CONFIG.anonKey
-        );
+        let supabaseClient = null;
+
+        // Attendre que le script Supabase soit chargé
+        window.addEventListener('load', function() {
+            if (typeof window.supabase !== 'undefined') {
+                supabaseClient = window.supabase.createClient(
+                    SUPABASE_CONFIG.url,
+                    SUPABASE_CONFIG.anonKey
+                );
+                console.log('✅ Supabase client initialisé');
+                checkAuth();
+            } else {
+                console.error('❌ Supabase SDK non chargé');
+                document.getElementById('auth-result').innerHTML =
+                    '<div class="result error">❌ Erreur: Supabase SDK non chargé. Désactivez le blocage de tracking dans votre navigateur.</div>';
+            }
+        });
 
         async function checkAuth() {
             const resultDiv = document.getElementById('auth-result');
             resultDiv.innerHTML = '⏳ Vérification en cours...';
 
+            if (!supabaseClient) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '❌ Supabase non initialisé. Désactivez le blocage de tracking dans votre navigateur et rechargez la page.';
+                return;
+            }
+
             try {
-                const { data: { user }, error } = await supabase.auth.getUser();
+                const { data: { user }, error } = await supabaseClient.auth.getUser();
 
                 if (error) throw error;
 
@@ -137,9 +156,15 @@ ${JSON.stringify(user.user_metadata, null, 2)}`;
             const resultDiv = document.getElementById('create-result');
             resultDiv.innerHTML = '⏳ Test en cours...';
 
+            if (!supabaseClient) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '❌ Supabase non initialisé. Rechargez la page.';
+                return;
+            }
+
             try {
                 // 1. Vérifier l'utilisateur
-                const { data: { user }, error: authError } = await supabase.auth.getUser();
+                const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
 
                 if (authError) throw authError;
 
@@ -154,7 +179,7 @@ ${JSON.stringify(user.user_metadata, null, 2)}`;
 ⏳ Tentative de création du rapport...`;
 
                 // 2. Récupérer une cage
-                const { data: cages, error: cageError } = await supabase
+                const { data: cages, error: cageError } = await supabaseClient
                     .from('cages')
                     .select('id, cage_number')
                     .limit(1);
@@ -179,7 +204,7 @@ ${JSON.stringify(user.user_metadata, null, 2)}`;
 
                 console.log('Données envoyées:', testReport);
 
-                const { data, error: insertError } = await supabase
+                const { data, error: insertError } = await supabaseClient
                     .from('daily_reports')
                     .insert(testReport)
                     .select()
@@ -222,8 +247,14 @@ ${error.stack || ''}`;
             const resultDiv = document.getElementById('read-result');
             resultDiv.innerHTML = '⏳ Lecture en cours...';
 
+            if (!supabaseClient) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '❌ Supabase non initialisé. Rechargez la page.';
+                return;
+            }
+
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('daily_reports')
                     .select('id, report_date, cage_id, alive_count, created_by')
                     .order('created_at', { ascending: false })
@@ -252,10 +283,6 @@ ${data.map((r, i) => `${i + 1}. ID: ${r.id}
             }
         }
 
-        // Auto-check au chargement
-        window.onload = () => {
-            checkAuth();
-        };
     </script>
 </body>
 </html>
