@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug RLS avec Connexion - AquaVision</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        h2 {
+            color: #64748b;
+            font-size: 16px;
+            font-weight: normal;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        .login-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 2px solid #e2e8f0;
+        }
+        .login-section.authenticated {
+            background: #dcfce7;
+            border-color: #86efac;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border-left: 4px solid #2563eb;
+            background: #f8fafc;
+            border-radius: 4px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #1e293b;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        button:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+        button.danger {
+            background: #dc2626;
+        }
+        button.danger:hover {
+            background: #b91c1c;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #dcfce7;
+            border: 2px solid #86efac;
+            color: #166534;
+        }
+        .error {
+            background: #fee2e2;
+            border: 2px solid #fca5a5;
+            color: #991b1b;
+        }
+        .info {
+            background: #dbeafe;
+            border: 2px solid #93c5fd;
+            color: #1e40af;
+        }
+        .warning {
+            background: #fef3c7;
+            border: 2px solid #fcd34d;
+            color: #92400e;
+        }
+        .user-info {
+            font-size: 14px;
+            color: #166534;
+            margin-top: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #fff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnostic RLS - AquaVision</h1>
+        <h2>Outil de test et débogage des politiques de sécurité</h2>
+
+        <!-- Section de connexion -->
+        <div id="login-section" class="login-section">
+            <h3>🔐 Connexion requise</h3>
+            <p>Vous devez vous connecter pour tester les opérations sur la base de données.</p>
+
+            <input type="email" id="email-input" placeholder="Email (ex: admin@aquavision.com)" />
+            <input type="password" id="password-input" placeholder="Mot de passe" />
+
+            <button onclick="login()">
+                <span id="login-spinner" class="spinner hidden"></span>
+                Se connecter
+            </button>
+
+            <div id="login-result"></div>
+        </div>
+
+        <!-- Section utilisateur connecté -->
+        <div id="authenticated-section" class="login-section authenticated hidden">
+            <h3>✅ Connecté</h3>
+            <div id="user-info" class="user-info"></div>
+            <button class="danger" onclick="logout()">Se déconnecter</button>
+        </div>
+
+        <!-- Tests RLS -->
+        <div id="tests-section" class="hidden">
+            <div class="test-section">
+                <h3>1️⃣ Tester lecture des cages</h3>
+                <p>Vérifie que vous pouvez lire les cages existantes</p>
+                <button onclick="testReadCages()">Lire les cages</button>
+                <div id="cages-result" class="result"></div>
+            </div>
+
+            <div class="test-section">
+                <h3>2️⃣ Tester création de rapport (TEST RLS)</h3>
+                <p>Ce test vérifie si la politique RLS est correctement configurée</p>
+                <button onclick="testCreateReport()">Créer rapport de test</button>
+                <div id="create-result" class="result"></div>
+            </div>
+
+            <div class="test-section">
+                <h3>3️⃣ Tester lecture des rapports</h3>
+                <p>Affiche les derniers rapports créés</p>
+                <button onclick="testReadReports()">Lire les rapports</button>
+                <div id="read-result" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_CONFIG = {
+            url: 'https://gswozuotdrfgvutitssf.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdzd296dW90ZHJmZ3Z1dGl0c3NmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDA5NzMsImV4cCI6MjA4MTkxNjk3M30.9fivWqGwgVjs6lvKHg-ybWtq1D5EaZ3ZM7Gcz_JZxh0'
+        };
+
+        let supabaseClient = null;
+
+        // Initialiser Supabase
+        window.addEventListener('load', function() {
+            if (typeof window.supabase !== 'undefined') {
+                supabaseClient = window.supabase.createClient(
+                    SUPABASE_CONFIG.url,
+                    SUPABASE_CONFIG.anonKey
+                );
+                console.log('✅ Supabase client initialisé');
+                checkAuthStatus();
+            } else {
+                showError('login-result', 'Supabase SDK non chargé. Désactivez le blocage de tracking.');
+            }
+        });
+
+        // Vérifier le statut d'authentification
+        async function checkAuthStatus() {
+            if (!supabaseClient) return;
+
+            try {
+                const { data: { user }, error } = await supabaseClient.auth.getUser();
+
+                if (user) {
+                    showAuthenticatedView(user);
+                } else {
+                    showLoginView();
+                }
+            } catch (error) {
+                console.error('Erreur auth:', error);
+                showLoginView();
+            }
+        }
+
+        // Afficher la vue de connexion
+        function showLoginView() {
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('authenticated-section').classList.add('hidden');
+            document.getElementById('tests-section').classList.add('hidden');
+        }
+
+        // Afficher la vue authentifiée
+        function showAuthenticatedView(user) {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('authenticated-section').classList.remove('hidden');
+            document.getElementById('tests-section').classList.remove('hidden');
+
+            document.getElementById('user-info').innerHTML = `
+                <strong>Email:</strong> ${user.email}<br>
+                <strong>ID:</strong> ${user.id}<br>
+                <strong>Créé:</strong> ${new Date(user.created_at).toLocaleString()}
+            `;
+        }
+
+        // Connexion
+        async function login() {
+            const email = document.getElementById('email-input').value.trim();
+            const password = document.getElementById('password-input').value;
+            const resultDiv = document.getElementById('login-result');
+            const spinner = document.getElementById('login-spinner');
+
+            if (!email || !password) {
+                showError('login-result', 'Veuillez remplir tous les champs');
+                return;
+            }
+
+            spinner.classList.remove('hidden');
+            resultDiv.innerHTML = '';
+
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                spinner.classList.add('hidden');
+
+                if (error) throw error;
+
+                if (data.user) {
+                    showAuthenticatedView(data.user);
+                    showSuccess('login-result', `✅ Connecté avec succès !`);
+                    setTimeout(() => {
+                        resultDiv.innerHTML = '';
+                    }, 2000);
+                }
+            } catch (error) {
+                spinner.classList.add('hidden');
+                showError('login-result', `Erreur de connexion: ${error.message}`);
+            }
+        }
+
+        // Déconnexion
+        async function logout() {
+            try {
+                await supabaseClient.auth.signOut();
+                showLoginView();
+                document.getElementById('email-input').value = '';
+                document.getElementById('password-input').value = '';
+            } catch (error) {
+                console.error('Erreur déconnexion:', error);
+            }
+        }
+
+        // Test: Lire les cages
+        async function testReadCages() {
+            const resultDiv = document.getElementById('cages-result');
+            resultDiv.innerHTML = '⏳ Lecture en cours...';
+            resultDiv.className = 'result info';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('cages')
+                    .select('id, cage_number, status, alive_count')
+                    .limit(5);
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    showWarning('cages-result', '📭 Aucune cage trouvée.\n\nCréez d\'abord des cages dans l\'application.');
+                    return;
+                }
+
+                showSuccess('cages-result',
+                    `✅ ${data.length} CAGE(S) TROUVÉE(S)\n\n` +
+                    data.map((c, i) =>
+                        `${i + 1}. ${c.cage_number}\n   Status: ${c.status}\n   Vivants: ${c.alive_count || 0}`
+                    ).join('\n\n')
+                );
+            } catch (error) {
+                showError('cages-result', `❌ ERREUR: ${error.message}`);
+            }
+        }
+
+        // Test: Créer un rapport
+        async function testCreateReport() {
+            const resultDiv = document.getElementById('create-result');
+            resultDiv.innerHTML = '⏳ Test en cours...';
+            resultDiv.className = 'result info';
+
+            try {
+                // 1. Vérifier l'utilisateur
+                const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+                if (authError) throw authError;
+
+                // 2. Récupérer une cage
+                const { data: cages, error: cageError } = await supabaseClient
+                    .from('cages')
+                    .select('id, cage_number')
+                    .limit(1);
+
+                if (cageError) throw cageError;
+
+                if (!cages || cages.length === 0) {
+                    showError('create-result', '❌ Aucune cage trouvée.\n\nCréez d\'abord une cage dans l\'application.');
+                    return;
+                }
+
+                const cage = cages[0];
+
+                // 3. Créer le rapport de test
+                const testReport = {
+                    cage_id: cage.id,
+                    report_date: new Date().toISOString().split('T')[0],
+                    alive_count: 1000,
+                    new_dead: 0,
+                    created_by: user.id,
+                    updated_by: user.id
+                };
+
+                console.log('📝 Tentative de création:', testReport);
+
+                const { data, error: insertError } = await supabaseClient
+                    .from('daily_reports')
+                    .insert(testReport)
+                    .select()
+                    .single();
+
+                if (insertError) {
+                    showError('create-result',
+                        `❌ ERREUR RLS DÉTECTÉE !\n\n` +
+                        `Message: ${insertError.message}\n` +
+                        `Code: ${insertError.code}\n\n` +
+                        `🔧 SOLUTION:\n` +
+                        `1. Allez sur: https://supabase.com/dashboard/project/gswozuotdrfgvutitssf\n` +
+                        `2. Cliquez sur "SQL Editor"\n` +
+                        `3. Exécutez le script "fix_rls_complet.sql"\n\n` +
+                        `DONNÉES ENVOYÉES:\n${JSON.stringify(testReport, null, 2)}`
+                    );
+                    return;
+                }
+
+                showSuccess('create-result',
+                    `✅ RAPPORT CRÉÉ AVEC SUCCÈS !\n\n` +
+                    `Cage: ${cage.cage_number}\n` +
+                    `Date: ${testReport.report_date}\n` +
+                    `ID: ${data.id}\n\n` +
+                    `🎉 Le problème RLS est RÉSOLU !`
+                );
+
+            } catch (error) {
+                showError('create-result', `❌ ERREUR: ${error.message}\n\n${error.stack || ''}`);
+            }
+        }
+
+        // Test: Lire les rapports
+        async function testReadReports() {
+            const resultDiv = document.getElementById('read-result');
+            resultDiv.innerHTML = '⏳ Lecture en cours...';
+            resultDiv.className = 'result info';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('daily_reports')
+                    .select('id, report_date, cage_id, alive_count, created_by')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    showWarning('read-result', '📭 Aucun rapport trouvé.');
+                    return;
+                }
+
+                showSuccess('read-result',
+                    `✅ ${data.length} RAPPORT(S) TROUVÉ(S)\n\n` +
+                    data.map((r, i) =>
+                        `${i + 1}. ID: ${r.id.substring(0, 8)}...\n` +
+                        `   Date: ${r.report_date}\n` +
+                        `   Vivants: ${r.alive_count}\n` +
+                        `   Créé par: ${r.created_by.substring(0, 8)}...`
+                    ).join('\n\n')
+                );
+
+            } catch (error) {
+                showError('read-result', `❌ ERREUR: ${error.message}`);
+            }
+        }
+
+        // Fonctions utilitaires
+        function showSuccess(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.className = 'result success';
+            el.innerHTML = message;
+        }
+
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.className = 'result error';
+            el.innerHTML = message;
+        }
+
+        function showWarning(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.className = 'result warning';
+            el.innerHTML = message;
+        }
+
+        function showInfo(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.className = 'result info';
+            el.innerHTML = message;
+        }
+
+        // Permettre la connexion avec Enter
+        document.addEventListener('DOMContentLoaded', () => {
+            const passwordInput = document.getElementById('password-input');
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        login();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
