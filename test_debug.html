@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug RLS - AquaVision</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2563eb;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 4px solid #2563eb;
+            background: #f8fafc;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #dcfce7;
+            border: 1px solid #86efac;
+            color: #166534;
+        }
+        .error {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+        }
+        .info {
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnostic RLS - AquaVision</h1>
+
+        <div class="test-section">
+            <h3>1️⃣ Vérifier l'authentification</h3>
+            <button onclick="checkAuth()">Vérifier utilisateur actuel</button>
+            <div id="auth-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2️⃣ Tester création rapport (avec debug)</h3>
+            <button onclick="testCreateReport()">Créer rapport de test</button>
+            <div id="create-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3️⃣ Tester lecture rapports</h3>
+            <button onclick="testReadReports()">Lire les rapports</button>
+            <div id="read-result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_CONFIG = {
+            url: 'https://gswozuotdrfgvutitssf.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdzd296dW90ZHJmZ3Z1dGl0c3NmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDA5NzMsImV4cCI6MjA4MTkxNjk3M30.9fivWqGwgVjs6lvKHg-ybWtq1D5EaZ3ZM7Gcz_JZxh0'
+        };
+
+        const supabase = window.supabase.createClient(
+            SUPABASE_CONFIG.url,
+            SUPABASE_CONFIG.anonKey
+        );
+
+        async function checkAuth() {
+            const resultDiv = document.getElementById('auth-result');
+            resultDiv.innerHTML = '⏳ Vérification en cours...';
+
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+
+                if (error) throw error;
+
+                if (!user) {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ AUCUN UTILISATEUR AUTHENTIFIÉ
+
+Vous devez vous connecter d'abord !
+Allez sur la page de connexion de l'application.`;
+                    return;
+                }
+
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `✅ UTILISATEUR AUTHENTIFIÉ
+
+ID: ${user.id}
+Email: ${user.email}
+Créé: ${new Date(user.created_at).toLocaleString()}
+
+Métadonnées:
+${JSON.stringify(user.user_metadata, null, 2)}`;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ ERREUR: ${error.message}`;
+            }
+        }
+
+        async function testCreateReport() {
+            const resultDiv = document.getElementById('create-result');
+            resultDiv.innerHTML = '⏳ Test en cours...';
+
+            try {
+                // 1. Vérifier l'utilisateur
+                const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+                if (authError) throw authError;
+
+                if (!user) {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = '❌ Vous devez être connecté !';
+                    return;
+                }
+
+                resultDiv.className = 'result info';
+                resultDiv.innerHTML = `📝 Utilisateur: ${user.email} (${user.id})
+⏳ Tentative de création du rapport...`;
+
+                // 2. Récupérer une cage
+                const { data: cages, error: cageError } = await supabase
+                    .from('cages')
+                    .select('id, cage_number')
+                    .limit(1);
+
+                if (cageError) throw cageError;
+
+                if (!cages || cages.length === 0) {
+                    throw new Error('Aucune cage trouvée. Créez une cage d\'abord.');
+                }
+
+                const cage = cages[0];
+
+                // 3. Créer le rapport de test
+                const testReport = {
+                    cage_id: cage.id,
+                    report_date: new Date().toISOString().split('T')[0],
+                    alive_count: 1000,
+                    new_dead: 0,
+                    created_by: user.id,
+                    updated_by: user.id
+                };
+
+                console.log('Données envoyées:', testReport);
+
+                const { data, error: insertError } = await supabase
+                    .from('daily_reports')
+                    .insert(testReport)
+                    .select()
+                    .single();
+
+                if (insertError) {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ ERREUR RLS DÉTECTÉE !
+
+Erreur: ${insertError.message}
+Code: ${insertError.code}
+Détails: ${insertError.details || 'N/A'}
+
+DONNÉES ENVOYÉES:
+${JSON.stringify(testReport, null, 2)}
+
+🔧 SOLUTION:
+Exécutez le script "fix_rls_complet.sql" dans Supabase SQL Editor !`;
+                    return;
+                }
+
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `✅ RAPPORT CRÉÉ AVEC SUCCÈS !
+
+Cage: ${cage.cage_number}
+Date: ${testReport.report_date}
+ID Rapport: ${data.id}
+
+Le problème RLS est RÉSOLU ! ✅`;
+
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ ERREUR: ${error.message}
+
+${error.stack || ''}`;
+            }
+        }
+
+        async function testReadReports() {
+            const resultDiv = document.getElementById('read-result');
+            resultDiv.innerHTML = '⏳ Lecture en cours...';
+
+            try {
+                const { data, error } = await supabase
+                    .from('daily_reports')
+                    .select('id, report_date, cage_id, alive_count, created_by')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    resultDiv.className = 'result info';
+                    resultDiv.innerHTML = '📭 Aucun rapport trouvé.';
+                    return;
+                }
+
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `✅ ${data.length} RAPPORT(S) TROUVÉ(S)
+
+${data.map((r, i) => `${i + 1}. ID: ${r.id}
+   Date: ${r.report_date}
+   Cage: ${r.cage_id}
+   Vivants: ${r.alive_count}
+   Créé par: ${r.created_by}`).join('\n\n')}`;
+
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ ERREUR: ${error.message}`;
+            }
+        }
+
+        // Auto-check au chargement
+        window.onload = () => {
+            checkAuth();
+        };
+    </script>
+</body>
+</html>
